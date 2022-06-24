@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <!--    导入 axios-->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<!-- vue的大胡子语法 和 django/flask的模板语法 冲突了,因此用delimiters:['[[',']]'],换写法 -->
+
+<div id="app">
+<!--{{ message }} -->
+    <span>[[message]]</span>
+
+    <button @click="login">get请求</button>
+    <hr>
+    <span>[[username]]</span>
+
+    <hr>
+    <button @click="login2">post请求</button>
+</div>
+
+<script type="text/javascript">
+    var app = new Vue({
+    el: '#app',
+    delimiters:['[[',']]'],
+    data: {
+        message: 'Hello Vue!',
+        username:'',
+        },
+    methods:{
+        login:function () {
+            // 这里发送axios,相当于发送ajax请求
+            // 向给定ID的用户发起请求
+            let url='http://127.0.0.1:8000/recevieview/?username=python&password=1234'
+            {# then catch 用 => 箭头函数 this #}
+            alert('yunxing')
+            axios.get(url).then((response)=>{
+            {#  response(相应) --> response.data(返回数据) --> #}
+                this.username=response.data.info.username
+                console.log(this.username)
+            }).catch((error)=>{
+                console.log(error)
+            }).then();
+        },
+        login2:function () {
+            let url='http://127.0.0.1:8000/recevieview/'
+            axios.post(url,{
+                'username':'mysql',
+                'password':'redis',
+                }).then((response)=>{
+                    {# then 成功的回调 catch 失败的回调#}
+                this.username=response.data.info.username
+                console.log(this.username)
+                }
+            ).catch((error)=>{
+                console.log(error)
+            });
+        }
+    }    
+})
+</script>
+</body>
+</html>

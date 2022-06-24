@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+python web开发
+{{ username }}
+<hr>我的年龄是 {{ age }}
+<hr>我的朋友名字是{{ friends }}。
+<hr>我共有{{ friends | length}}个朋友
+<hr>我的girl朋友是{{friends.1}}
+<hr>我第一年的月薪是 {{ money['2019'] }}
+<ul>
+{% for item in friends %}
+    <li>{{ loop.index }}</li>
+    <li>{{ loop.index }}-{{ item }}</li>
+    {% endfor %}
+</ul>
+<hr>
+{% if age > 10 %}
+大于10岁
+{% else %}
+不大于10岁
+{% endif %}
+<hr>
+{# 单行注释，没有多行注释 #}
+
+{#  过滤器的语法形式:  变量|过滤器:'参数' #}
+{#我是生日是 {{ birthday|date:'Y年m月d日' }}#}
+<!--
+默认配置被有意地保持为最低。如果一个模板被请求渲染（例如，当使用 render()），
+Jinja2 后端会在上下文中添加 request，csrf_input 和 csrf_token。
+除此之外，此后端不会创建 Django 风格的环境。 它不知道 Django 过滤器和标签。
+为了使用 Django 特有的 API，你必须将它们配置到环境中。
+-->
+我是生日是{{ date(birthday,'Y年m月d日') }}
+<hr>
+我的简介是{{ desc|safe }}
+<hr>
+{#我没有定义的变量{{ abcde(default,':~~~~~~' )}}#}
+</body>
+</html>

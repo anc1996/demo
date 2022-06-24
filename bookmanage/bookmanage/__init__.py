@@ -1,0 +1,3 @@
+# 必需要在工程的包中导入pymysql，并且要调用install_as_MySQLdb方法
+import pymysql
+pymysql.install_as_MySQLdb()
