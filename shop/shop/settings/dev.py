@@ -11,12 +11,13 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-import os
+import os,sys
 from pathlib import Path
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+# print(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -31,14 +32,26 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
+# 查看导包路径
+# print(sys.path)
+
+# 追加导包路径指向apps
+print(BASE_DIR)
+sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
+
 
 INSTALLED_APPS = [
+    # 第一次迁移会读取这里的子应用，然后通通都迁移
     'django.contrib.admin',
+    # 分装整套用户认证系统
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 注册apps下子应用的user，用户模块
+    'users',
+    'contents',# 首页广告模块
 ]
 
 MIDDLEWARE = [
@@ -54,13 +67,15 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'shop.urls'
 
 TEMPLATES = [
-    # django模板
+    # jinja2模板
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',  # jinja模板
+        'DIRS': [os.path.join(BASE_DIR, 'templates')]  # 配置模板文件加载路径
         ,
         'APP_DIRS': True,
         'OPTIONS': {
+            # 'environment':'jinja2.Environment',  #默认的
+            'environment': 'shop.utils.jinja2_env.jinja2_environment',  # 指定jinja2的环境
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -69,15 +84,13 @@ TEMPLATES = [
             ],
         },
     },
-    # jinja2模板
+    # django模板
     {
-        'BACKEND': 'django.template.backends.jinja2.Jinja2', # jinja模板
-        'DIRS': [os.path.join(BASE_DIR, 'templates')] # 配置模板文件加载路径
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
-            # 'environment':'jinja2.Environment',  #默认的
-            'environment': 'shop.utils.jinja2_env.jinja2_environment',  # 指定jinja2的环境
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -173,8 +186,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
-
+# 指定加载静态文件路由的前缀
 STATIC_URL = 'static/'
+# 告知系统静态文件在哪里
+STATICFILES_DIRS = [
+    os.path.join(os.path.dirname(BASE_DIR), 'static'),
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -223,3 +241,6 @@ LOGGING = {
         },
     }
 }
+
+# 指定自定义用户的模型类  值的语法：'子应用.用户模型类'
+AUTH_USER_MODEL = "users.User"
