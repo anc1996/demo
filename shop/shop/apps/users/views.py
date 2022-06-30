@@ -1,10 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.views import View
-from django.http import HttpResponseForbidden,HttpResponse
+from django.http import HttpResponseForbidden,HttpResponse,JsonResponse
 from .models import User
-import re
+from django.urls import reverse
 from django.db import DatabaseError
+from django.contrib.auth import login
+from shop.utils.response_code import RETCODE
+import re
 # Create your views here.
+''' 提供用户注册页面,判断用户名是否重复注册,判断手机号是否重复注册'''
 class RegisterView(View):
     "用户注册"
     def get(self,request):
@@ -43,14 +47,42 @@ class RegisterView(View):
         if allow != 'on':
             return HttpResponseForbidden('请勾选用户协议')
 
-
         # 保存注册数据，是注册业务的核心。
         try:
             user=User.objects.create_user(username=username,password=password,mobile=mobile)
         except DatabaseError:
             return render(request,'register.html', {'register_errmsg': '注册失败'})
 
-        # 响应结果：重定向首页
-        return HttpResponse('注册成功，重定向到首页')
+        # 实现状态保持
+        login(request,user)
+        '''响应结果：重定向首页'''
+        # redirect
+        # print(reverse('contents:index'))  # /
+        return redirect(reverse('contents:index'))
 
 
+class UsernameCountView(View):
+    """判断用户名是否重复注册"""
+
+    def get(self, request, username):
+        """
+        :param request: 请求对象
+        :param username: 用户名
+        :return: JSON
+        """
+        # 实现主体业务逻辑：使用username查询对应的记录的条数
+        count=User.objects.filter(username=username).count()
+
+        return JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'count': count})
+
+class MobileCountView(View):
+    """判断手机号是否重复注册"""
+
+    def get(self,request,mobile):
+        """
+        :param request:请求对象
+        :param mobile:手机号
+        :return:JSON
+        """
+        count=User.objects.filter(mobile=mobile).count()
+        return JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'count': count})
