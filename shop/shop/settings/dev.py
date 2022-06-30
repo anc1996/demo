@@ -50,8 +50,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 注册apps下子应用的user，用户模块
-    'users',
+    'users',# 用户模块
     'contents',# 首页广告模块
+    'verifications',# 验证码模块
 ]
 
 MIDDLEWARE = [

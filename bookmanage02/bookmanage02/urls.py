@@ -24,6 +24,6 @@ urlpatterns = [
     # re_path(r'^',include('book.urls',namespace='book')),
     re_path(r'^',include(('book.urls','book'),namespace='book')),
     #没有namespace
-    # re_path(r'^',include('book.urls')),
+    re_path(r'^',include('book.urls')),
 
 ]

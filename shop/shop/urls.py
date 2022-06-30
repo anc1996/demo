@@ -33,4 +33,6 @@ urlpatterns = [
     re_path(r'^',include(('users.urls','users'),namespace='users')),
     # contents
     re_path(r'^', include(('contents.urls', 'contents'), namespace='contents')),
+    # verifications
+    re_path(r'^',include('verifications.urls')),
 ]
