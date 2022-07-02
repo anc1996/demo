@@ -24,3 +24,13 @@ class ImageCodeView(View):
         redis_conn.setex('img_%s'%uuid,constants.IMAGE_CODE_REDIS_EXPIRES,text)
         # 响应图形验证码
         return HttpResponse(image,content_type='image/jpg')
+
+class ImageCodeView(View):
+    """短信验证码"""
+    def get(self,request,mobile):
+        """
+        :param request:
+        :param mobile:手机号
+        :return:JSON
+        """
+        pass
