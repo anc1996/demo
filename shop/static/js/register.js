@@ -13,6 +13,7 @@ let vm=new Vue({
         allow:'',
         image_code:'',
 
+
         //v-show
         error_name:false,//false表示不显示提示内容
         error_password:false,
@@ -20,11 +21,14 @@ let vm=new Vue({
         error_mobile:false,
         error_allow:false,
         error_image_code:false,
+        send_flag:false,// 控制短信发送验证的频率。false表示可以点击
 
         //error_message
         error_name_message:'',
         error_mobile_message:'',
         error_image_code_message:'',
+        sms_code_tip:'获取短信验证码',//短音验证码消息
+
 
         // 图形验证码url绑定
         image_code_url:'',
@@ -37,6 +41,57 @@ let vm=new Vue({
     },
     //采用es6语法
     methods:{ //定义和实现事件方法
+        // 发送短信验证码
+        send_sms_code(){
+            // 避免恶意用户频繁的点击获取短信验证码
+            if(this.send_flag==true) //判断send_flag=true，不能点击按钮
+            {return }
+            this.send_flag=true; //如果可以进入，理解锁上。
+            // let url='/sms_codes/mobile/?image_code=value&uuid=value';
+            this.check_mobile();
+            this.check_image_code();
+            if (this.error_mobile==true || this.check_image_code==true)
+            {
+                this.send_flag=false;
+                return;
+            }
+            let url='/sms_codes/' + this.mobile + '/?image_code=' + this.image_code+'&uuid='+ this.uuid;
+            axios.get(url,{responseType:'json'})
+                .then(response=>{
+                    if(response.data.code=='0') {
+                        //展示倒计时60秒
+                        //展示定时器
+                        // setInterval('回调函数','时间间隔')
+                        let time_count=60;
+                        let t=setInterval(()=>{
+                            if (time_count==1){//倒计时结束
+                                clearInterval(t);
+                                //还原sms_code_tip的提示文字
+                                this.sms_code_tip='重新换取短信验证码'
+                                // 重新生成图形验证码
+                                this.generate_image_code();
+                                this.send_flag=false;
+                            }
+                            else {//正在倒计时
+                                time_count=time_count-1;
+                            this.sms_code_tip=time_count+'秒';
+                            }
+                        },1000)
+                    }
+                    else {
+                        if(response.data.code=='4001'){
+                            // 图形验证码错误
+                            this.error_image_code_message=response.data.errmsg;
+                            this.error_image_code=true;
+                        }
+                        this.send_flag=false;
+                    }
+                })
+                .catch(error=>{
+                    console.log(error.response);
+                    this.send_flag=false;
+                })
+        },
         //生成图形验证码的方法
         generate_image_code(){
             this.uuid=generateUUID();

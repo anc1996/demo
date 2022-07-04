@@ -59,7 +59,7 @@ class CCP(object):
         # 返回单例
         return cls._instance
 
-    def send_teplate_sms(self,to,datas,tempId):
+    def send_template_sms(self,to,datas,tempId):
         # 发送短信验证码的方法
         """
         :param to:手机号码
@@ -81,4 +81,4 @@ if __name__ == '__main__':
     # sendTemplateSMS('15775023056', ['123456', 5], 1)
 
     # 单例类发送短信验证码，测试的短信模板编号为1
-    CCP().send_teplate_sms('15775023056', ['123456', 5], 1)
+    CCP().send_template_sms('15775023056',['123456', 5], 1)
