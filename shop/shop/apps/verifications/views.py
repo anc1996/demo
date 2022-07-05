@@ -7,7 +7,7 @@ from django_redis import get_redis_connection
 from django.http import HttpResponse,HttpResponseForbidden,JsonResponse
 from . import constants
 from shop.utils.response_code import RETCODE
-
+from celery_tasks.send_sms_code.tasks import ccp_send_sms_code
 from .libs.yuntongxun.ccp_sms import CCP
 
 
@@ -84,7 +84,9 @@ class SMSCodeView(View):
         # 发送短信验证码
         # 单例类发送短信验证码，过期时间5分钟，测试的短信模板编号为1
         print(type(constants.SEND_SMS_TEMPLATE_ID))
-        CCP().send_template_sms(mobile,[sms_code, constants.SMS_CODE_REDIS_EXPIRES // 60], constants.SEND_SMS_TEMPLATE_ID)
+        # CCP().send_template_sms(mobile,[sms_code, constants.SMS_CODE_REDIS_EXPIRES // 60], constants.SEND_SMS_TEMPLATE_ID) # 注释，\
+        # 用celery执行
+        ret=ccp_send_sms_code.delay(mobile, sms_code) # 千万不要忘记写delay，异步任务
         # 响应结果
         return JsonResponse({'code': RETCODE.OK, 'errmsg': '发送短信短信验证码成功'})
 
