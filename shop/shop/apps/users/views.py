@@ -1,12 +1,14 @@
 from django.shortcuts import render,redirect
 from django.views import View
 from django.http import HttpResponseForbidden,HttpResponse,JsonResponse
-from .models import User
+import re
 from django.urls import reverse
 from django.db import DatabaseError
 from django.contrib.auth import login
+from django_redis import get_redis_connection
 from shop.utils.response_code import RETCODE
-import re
+from .models import User
+
 # Create your views here.
 ''' 提供用户注册页面,判断用户名是否重复注册,判断手机号是否重复注册'''
 class RegisterView(View):
@@ -27,6 +29,7 @@ class RegisterView(View):
         password2 = request.POST.get('password2')
         mobile=request.POST.get('mobile')
         allow = request.POST.get('allow')
+        sms_code_client=request.POST.get('sms_code')
 
         # 校验参数:前后端校验需要分开，避免恶意用户越过前端逻辑发请求，要保证后端的安全。前后端校验逻辑要相同。
         # 判断参数是否齐全，all([list]):会去校验列表中元素是否存在空值，若为空，false
@@ -46,6 +49,14 @@ class RegisterView(View):
         # 判断用户是否勾选了协议
         if allow != 'on':
             return HttpResponseForbidden('请勾选用户协议')
+        # 判断短信验证码是否输入正确验证码
+        redis_conn=get_redis_connection('VerifyCode')
+        sms_code_server=redis_conn.get('sms_%s' % mobile).decode()
+        if sms_code_server is None:
+            return render(request,'register.html', {'sms_code_errmsg': '短信验证码失效'})
+        if sms_code_server!=sms_code_client:
+            return render(request, 'register.html', {'sms_code_errmsg': '输入短信验证码有误'})
+
 
         # 保存注册数据，是注册业务的核心。
         try:

@@ -46,8 +46,16 @@ class SMSCodeView(View):
         # 校验参数
         if not all([image_code_client,uuid]):
             return HttpResponseForbidden('缺少参数')
-        # 提取图形验证码
+
+        # 创建连接redis对象
         redis_conn=get_redis_connection('VerifyCode')
+
+        """判断发送短信验证码是否频繁"""
+        # 提取发送验证码的标记
+        send_flag=redis_conn.get('send_flag_%s'% mobile)
+        if send_flag:
+            return JsonResponse({'code':RETCODE.THROTTLINGERR,'errmsg':'发送短信验证码频繁'})
+        # 提取图形验证码
         image_code_server=redis_conn.get('img_%s' % uuid)
         if image_code_server is None:
             return JsonResponse({'code':RETCODE.IMAGECODEERR,'errmsg':'图形验证码已失效'})
@@ -61,8 +69,18 @@ class SMSCodeView(View):
         # 生成短信验证码,随机6位数
         sms_code='%06d' % random.randint(0,999999)
         logger.info('mobile:%s,sms_code:%s'%(mobile,sms_code)) # 手动输出日志，导出验证码
+
+        # 创建redis管道
+        pl=redis_conn.pipeline()
+        # 将命令添加到队列中
         # 保存短信验证码
-        redis_conn.setex('sms_%s' % mobile,constants.SMS_CODE_REDIS_EXPIRES,sms_code)
+        pl.setex('sms_%s' % mobile,constants.SMS_CODE_REDIS_EXPIRES,sms_code)
+        """避免频繁发送短信验证码"""
+        # 保存发送验证码的标记
+        pl.setex('send_flag_%s'% mobile,constants.SEND_SMS_CODE_INTERVAL,1)
+        # 执行
+        pl.execute()
+
         # 发送短信验证码
         # 单例类发送短信验证码，过期时间5分钟，测试的短信模板编号为1
         print(type(constants.SEND_SMS_TEMPLATE_ID))

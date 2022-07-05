@@ -12,7 +12,7 @@ let vm=new Vue({
         mobile:'',
         allow:'',
         image_code:'',
-
+        sms_code:'',//短信验证码内容
 
         //v-show
         error_name:false,//false表示不显示提示内容
@@ -22,13 +22,14 @@ let vm=new Vue({
         error_allow:false,
         error_image_code:false,
         send_flag:false,// 控制短信发送验证的频率。false表示可以点击
+        error_sms_code:false,
 
         //error_message
         error_name_message:'',
         error_mobile_message:'',
         error_image_code_message:'',
         sms_code_tip:'获取短信验证码',//短音验证码消息
-
+        error_sms_code_message:'',
 
         // 图形验证码url绑定
         image_code_url:'',
@@ -81,6 +82,11 @@ let vm=new Vue({
                     else {
                         if(response.data.code=='4001'){
                             // 图形验证码错误
+                            this.error_image_code_message=response.data.errmsg;
+                            this.error_image_code=true;
+                        }
+                        if(response.data.code=='4002')
+                        {  // 短信验证码过于频繁
                             this.error_image_code_message=response.data.errmsg;
                             this.error_image_code=true;
                         }
@@ -158,6 +164,17 @@ let vm=new Vue({
                 this.error_image_code=false;
             }
         },
+         // 校验短信验证码
+        check_sms_code(){
+            if(this.sms_code.length!=6){
+                this.error_sms_code_message = '请输入6位短信验证码';
+                this.error_sms_code = true;
+            }
+            else {
+                this.error_sms_code_message = '';
+                this.error_sms_code = false;
+            }
+        },
         // 校验手机号
         check_mobile(){
              let re=/^1[3-9]\d{9}$/;
@@ -189,6 +206,7 @@ let vm=new Vue({
 
             }
         },
+
         // 校验是否勾选协议
         check_allow(){
             if(!this.allow){
@@ -205,10 +223,11 @@ let vm=new Vue({
             this.check_password2();
             this.check_mobile();
             this.check_allow();
+            this.check_sms_code();
 
             // 在校验之后，注册数据中，只要有错误，就禁用掉表单的提交事件
              if(this.error_name==true||this.error_password==true||this.error_password2==true||
-            this.error_mobile==true||this.error_allow==true){
+            this.error_mobile==true||this.error_allow==true || this.error_sms_code==true){
                  // 禁用掉表单的提交事件
                 window.event.returnValue = false;
             }
