@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-2gn%-!a%xgkw=o1m$dat8!ry)3vfp)cu)k-%n88i1v_@kykp0_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ov-vo.cn','127.0.0.1']
 
 
 # Application definition
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'users',# 用户模块
     'contents',# 首页广告模块
     'verifications',# 验证码模块
+    'oauth',# 第三方登录
 ]
 
 MIDDLEWARE = [
@@ -251,3 +252,8 @@ AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend']
 
 # 判断用户是否登录，指定未登录用户重定向的地址
 LOGIN_URL="/login/"
+
+# QQ登录参数
+QQ_CLIENT_ID = '102016086'
+QQ_CLIENT_SECRET = 'FPM55xe8PSIuITSE'
+QQ_REDIRECT_URI = 'http://ov-vo.cn/oauth_callback'

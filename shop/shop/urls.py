@@ -35,4 +35,6 @@ urlpatterns = [
     re_path(r'^', include(('contents.urls', 'contents'), namespace='contents')),
     # verifications
     re_path(r'^',include('verifications.urls')),
+    # oauth
+    re_path(r'^',include('oauth.urls')),
 ]
