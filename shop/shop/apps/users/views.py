@@ -4,13 +4,20 @@ from django.http import HttpResponseForbidden,HttpResponse,JsonResponse
 import re
 from django.urls import reverse
 from django.db import DatabaseError
-from django.contrib.auth import login
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import login,authenticate,logout
 from django_redis import get_redis_connection
 from shop.utils.response_code import RETCODE
 from .models import User
 
 # Create your views here.
-''' 提供用户注册页面,判断用户名是否重复注册,判断手机号是否重复注册'''
+''' 1、提供用户注册页面,判断用户名是否重复注册,判断手机号是否重复注册
+    2、提供登录页面
+    3、退出登录
+    4、展示首页用户名信息
+    5、判断是否登录，为用户中心和我的订单做准备
+'''
+
 class RegisterView(View):
     "用户注册"
     def get(self,request):
@@ -56,7 +63,9 @@ class RegisterView(View):
             return render(request,'register.html', {'sms_code_errmsg': '短信验证码失效'})
         if sms_code_server!=sms_code_client:
             return render(request, 'register.html', {'sms_code_errmsg': '输入短信验证码有误'})
-
+        count = User.objects.filter(username=username).count()
+        if count!=0:
+            return render(request, 'register.html', {'register_errmsg': '用户名已存在'})
 
         # 保存注册数据，是注册业务的核心。
         try:
@@ -67,9 +76,12 @@ class RegisterView(View):
         # 实现状态保持
         login(request,user)
         '''响应结果：重定向首页'''
+        response=redirect(reverse('contents:index'))
+        # 为了实现在首页的右上角展示用户名信息，我们需要将用户名缓存到cookie中,有效期15天
+        response.set_cookie('username', user.username, max_age=3600 * 24 * 15)
         # redirect
         # print(reverse('contents:index'))  # /
-        return redirect(reverse('contents:index'))
+        return response
 
 
 class UsernameCountView(View):
@@ -97,3 +109,89 @@ class MobileCountView(View):
         """
         count=User.objects.filter(mobile=mobile).count()
         return JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'count': count})
+
+class LoginView(View):
+    """用户登录"""
+
+    def get(self,request):
+        """
+        提供用户登录页面
+        :param request:
+        :return:render()登录页面
+        """
+        return render(request,'login.html')
+
+    def post(self,request):
+        """
+        实现用户登录逻辑
+        :param request:
+        :return:
+        """
+        # 接收参数
+        username=request.POST.get('username')
+        password = request.POST.get('password')
+        remembered = request.POST.get('remembered')
+        # 校验参数
+        if not all([username, password]):
+            return HttpResponseForbidden('登录时缺少必传参数，响应错误信息，403')
+        # 用户名是5-20个字符，[a-zA-Z0-9_-]
+        if not re.match('^[a-zA-Z0-9_-]{5,20}$', username):
+            return HttpResponseForbidden('请输入5-20个字符的用户名')
+        # 判断密码是否相同，且密码是否是8-20个字符
+        if not re.match(r'^[0-9A-Za-z]{8,20}$', password):
+            return HttpResponseForbidden('请输入8-20位的密码')
+        # 认证登录用户：使用账号查询用户是否存在，如果用户存在，再校验密码是否正确
+        user=authenticate(username=username,password=password)
+        if user is None:
+            return render(request, 'login.html', {'account_errmsg': '用户名或密码错误'})
+        # 使用记住用户，确定状态保持周期
+        login(request, user)
+        if remembered!='on':
+            # 用户没有记住登录：状态保持浏览器会话结束后消失，value单位为秒
+            request.session.set_expiry(0)
+            # 如果value为0, the user's session cookie will expire when the user's web browser is closed.
+        else: # 记住登录：状态保持信息为保持2周
+            request.session.set_expiry(None) # 如果value为None，那么session有效期将采用系统默认值， 默认为两周,
+        # 用户展示：在响应结果之前，先取出next
+        next_value=request.GET.get('next')
+        # 响应结果
+        if next:
+            # 重定向到next
+            response=redirect(next_value)
+        else:
+            # 重定向到首页
+            response = redirect(reverse('contents:index'))
+        # 为了实现在首页的右上角展示用户名信息，我们需要将用户名缓存到cookie中,有效期15天
+        response.set_cookie('username', user.username, max_age=3600 * 24 * 15)
+        return response
+
+class LogoutView(View):
+    """用户退出登录"""
+    def get(self,request):
+        """实现用户退出逻辑"""
+        ## 清楚状态信息
+        logout(request)
+        ## 响应结果,并删除cookie内容
+        response=redirect(reverse('contents:index'))
+        response.delete_cookie('username')
+        return response
+
+class UserInfoView(LoginRequiredMixin,View):
+    """用户中心"""
+    # 如果一个视图使用Mixin ，那么未经验证用户的所有请求都会被重定向到登录页面或者显示
+    # HTTP403Forbidden错误，这取决于raise_exception参数。
+    # 你可以设置 AccessMixin的任何参数来自定义未验证用户的处理：
+
+    def get(self,request):
+        """提供用户中心的页面"""
+        # 判断用户是否登录
+        # if request.user.is_authenticated:
+        #     return render(request,'user_center_info.html')
+        # else:
+        #     return redirect(reverse('users:login'))
+
+        # LoginRequiredMixin用法
+        # login_url ='/login/'
+        # 重定向?redirct_to=/*/
+        # redirect_field_name = 'redirect_to'
+        return render(request, 'user_center_info.html')
