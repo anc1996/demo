@@ -1,11 +1,20 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.views import View
 from QQLoginTool.QQtool import  OAuthQQ
-from django.http import JsonResponse,HttpResponseServerError
-import logging
+from django.http import JsonResponse,HttpResponseServerError,HttpResponseForbidden
+from django.contrib.auth import login
+import logging,re
 # 引入配置文件参数dev
 from django.conf import settings
+from django.urls import reverse
+from django_redis import get_redis_connection
+
+
 from shop.utils.response_code import RETCODE
+from .models import OAuthQQUser
+from .utils import generate_access_token,check_access_token
+from users.models import User
+
 class QQAuthURLView(View):
     """
     提供QQ登录页面网址
@@ -28,6 +37,7 @@ class QQAuthURLView(View):
 # 创建日志输出器
 logger=logging.getLogger('django')
 class QQAuthUserView(View):
+
     """qq扫码登录后的回调处理"""
     def get(self,request):
         # 获取回调后的code码
@@ -50,4 +60,82 @@ class QQAuthUserView(View):
             return HttpResponseServerError('OAuth2.0认证失败')
 
         # 使用openid 该qq用户是否绑定过美多商城的用户
-        pass
+        try:
+            oauth_user=OAuthQQUser.objects.get(openid=openid)
+        except OAuthQQUser.DoesNotExist as e:
+            # openid未绑定用户
+            """oauth_callback.html的access_token_openid网页记录openid"""
+            # openid加密发送到密文发送到网页
+            access_token=generate_access_token(openid)
+            context={'access_token_openid':access_token}
+            return render(request,'oauth_callback.html',context=context)
+        else:
+            # openid绑定用户,oauth_user.user从qq模型类找到对应的user模型类对象
+            login(request,oauth_user.user)
+            '''响应结果：重定向首页'''
+            # 将用户名写入cookie中
+            next = request.GET.get('state')
+            response = redirect(next)
+            # 为了实现在首页的右上角展示用户名信息，我们需要将用户名缓存到cookie中,有效期15天
+            response.set_cookie('username', oauth_user.user.username, max_age=3600 * 24 * 15)
+            return response
+
+    def post(self, request):
+        """美多商城用户绑定到openid"""
+        # 接收参数
+        mobile = request.POST.get('mobile')
+        password = request.POST.get('password')
+        sms_code_client = request.POST.get('sms_code')
+        access_token = request.POST.get('access_token_openid')
+
+        # 校验参数
+        # 判断参数是否齐全
+        if not all([mobile, password, sms_code_client]):
+            return HttpResponseForbidden('缺少必传参数')
+        # 判断手机号是否合法
+        if not re.match(r'^1[3-9]\d{9}$', mobile):
+            return HttpResponseForbidden('请输入正确的手机号码')
+        # 判断密码是否合格
+        if not re.match(r'^[0-9A-Za-z]{8,20}$', password):
+            return HttpResponseForbidden('请输入8-20位的密码')
+        # 判断短信验证码是否一致
+        redis_conn = get_redis_connection('VerifyCode')
+        sms_code_server = redis_conn.get('sms_%s' % mobile).decode()
+        if sms_code_server is None:
+            return render(request, 'oauth_callback.html', {'sms_code_errmsg': '无效的短信验证码'})
+        if sms_code_client != sms_code_server.decode():
+            return render(request, 'oauth_callback.html', {'sms_code_errmsg': '输入短信验证码有误'})
+        # 判断openid是否有效：错误提示放在sms_code_errmsg位置
+        openid = check_access_token(access_token)
+        if not openid:
+            return render(request, 'oauth_callback.html', {'openid_errmsg': '失效的openid'})
+
+        # 使用手机号查询对应的用户是否存在
+        try:
+            user=User.objects.get(mobile=mobile)
+        except User.DoesNotExist:
+            # 如果用户不已存在，新建用户
+            user=User.objects.create_user(username=mobile,password=password,mobile=mobile)
+        else:
+            # 如果用户已存在，需要校验登录密码
+            if not user.check_password(password):
+                return render(request, 'oauth_callback.html', {'account_errmsg': '用户名或密码错误'})
+        # 将用户绑定到openid
+        try:
+            oauth_qq_user=OAuthQQUser.objects.create(user=user,openid=openid)
+        except Exception as e:
+            logger.error(e) # 打印日志
+            return render(request, 'oauth_callback.html', {'qq_login_errmsg': 'QQ登录失败'})
+        # 实现状态保持
+        login(request, oauth_qq_user.user)
+        '''响应结果：重定指定回调的位置'''
+        # 将用户名写入cookie中
+        next=request.GET.get('state')
+        response = redirect(next)
+        # 为了实现在首页的右上角展示用户名信息，我们需要将用户名缓存到cookie中,有效期15天
+        response.set_cookie('username', oauth_qq_user.user.username, max_age=3600 * 24 * 15)
+        return response
+
+
+
+
