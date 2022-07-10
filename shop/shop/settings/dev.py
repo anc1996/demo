@@ -257,3 +257,14 @@ LOGIN_URL="/login/"
 QQ_CLIENT_ID = '102016086'
 QQ_CLIENT_SECRET = 'FPM55xe8PSIuITSE'
 QQ_REDIRECT_URI = 'http://ov-vo.cn/oauth_callback'
+
+# 配置邮箱
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # 指定邮件后端
+EMAIL_HOST = 'smtp.qq.com' # 发邮件主机
+EMAIL_PORT = 25 # 发邮件端口
+EMAIL_HOST_USER = '834195283@qq.com' # 授权的邮箱
+EMAIL_HOST_PASSWORD = 'nkkcrwntbszabcae' # 邮箱授权时获得的密码，非注册登录密码
+EMAIL_FROM = 'shop<834195283@qq.com>' # 发件人抬头
+
+# 邮箱验证链接
+EMAIL_VERIFY_URL = 'http://127.0.0.1:8000/emails/verification/'

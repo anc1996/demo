@@ -1,7 +1,54 @@
 # 自定义用户认证的后端：实现多账号登录
 from django.contrib.auth.backends import ModelBackend
 import re
+from django.conf import settings
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import BadData
+
 from .models import User
+from .constants import VERIFY_EMAIL_TOKEN_EXPIRES
+
+
+def generate_verify_email_url(user_id,user_email):
+    """
+       生成邮箱验证链接
+       :param user: 当前登录用户
+       :return: token
+    """
+    # 创建序列号对象
+    # Serializer('密钥，越复杂越安全','过期时间')
+    s = Serializer(settings.SECRET_KEY, VERIFY_EMAIL_TOKEN_EXPIRES)
+    # 准备待序列号的字典数据
+    data={'user_id':user_id,'email':user_email}
+    # 调用dumps方法进行序列化，bytes
+    ciphertext=s.dumps(data)
+    # 返回转成string，序列化的数据,
+    token=ciphertext.decode()
+    verify_url = settings.EMAIL_VERIFY_URL+'?token=' + token
+    return verify_url
+
+def check_verify_email_token(token):
+    """
+    解密token获取user_id,email信息
+    :param token:
+    :return:user
+    """
+    s = Serializer(settings.SECRET_KEY, VERIFY_EMAIL_TOKEN_EXPIRES)
+    try:
+        data=s.loads(token)
+    except BadData:
+        return None
+    else:
+        user_id = data.get('user_id')
+        email=data.get('email')
+        try:
+            user=User.objects.get(id=user_id,email=email)
+        except User.DoesNotExist:
+            return None
+        else:
+            return user
+
+
 
 def get_user_by_account(account):
     """
@@ -41,6 +88,5 @@ class UsernameMobileAuthBackend(ModelBackend):
             return user
         else:
             return None
-
 
 

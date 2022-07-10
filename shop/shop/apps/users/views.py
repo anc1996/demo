@@ -1,14 +1,19 @@
 from django.shortcuts import render,redirect
 from django.views import View
-from django.http import HttpResponseForbidden,HttpResponse,JsonResponse
-import re
+from django.http import HttpResponseForbidden,HttpResponseServerError,JsonResponse,HttpResponseBadRequest
+import re,json,logging
 from django.urls import reverse
 from django.db import DatabaseError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login,authenticate,logout
 from django_redis import get_redis_connection
+
+
 from shop.utils.response_code import RETCODE
 from .models import User
+from celery_tasks.email.tasks import send_verify_email
+from .utils import generate_verify_email_url,check_verify_email_token
+from shop.utils.views import LoginRequiredJSONMixin
 
 # Create your views here.
 ''' 1、提供用户注册页面,判断用户名是否重复注册,判断手机号是否重复注册
@@ -16,7 +21,11 @@ from .models import User
     3、退出登录
     4、展示首页用户名信息
     5、判断是否登录，为用户中心和我的订单做准备
+    6、用户中心
+    7、添加邮箱
 '''
+# 创建日志输出器
+logger=logging.getLogger('django')
 
 class RegisterView(View):
     "用户注册"
@@ -155,7 +164,7 @@ class LoginView(View):
         # 用户展示：在响应结果之前，先取出next
         next_value=request.GET.get('next')
         # 响应结果
-        if next:
+        if  next_value:
             # 重定向到next
             response=redirect(next_value)
         else:
@@ -194,4 +203,64 @@ class UserInfoView(LoginRequiredMixin,View):
         # login_url ='/login/'
         # 重定向?redirct_to=/*/
         # redirect_field_name = 'redirect_to'
-        return render(request, 'user_center_info.html')
+
+        # 如果LoginRequiredMixin，判断用户已登录，那么request.user就是登录用户对象
+        context={
+            'username': request.user.username,
+            'mobile': request.user.mobile,
+            'email': request.user.email,
+            'email_active': request.user.email_active,
+        }
+        return render(request, 'user_center_info.html',context=context)
+
+class EmailView(LoginRequiredJSONMixin,View):
+    """添加邮箱"""
+    # LoginRequiredJSONMixin判断用户是否登录
+    def put(self,request):
+        # 接受参数
+        json_str=request.body.decode() # body类型是bytes类型
+        json_dict=json.loads(json_str)
+        email=json_dict.get('email')
+        # 校验参数
+        if not email:
+            return HttpResponseForbidden('缺少email参数')
+        if not re.match(r'^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$', email):
+            return HttpResponseForbidden('参数email有误')
+
+        # 将用户传入的邮箱保持到user数据库的email字段中
+        try:
+            request.user.email=email
+            request.user.save()
+        except Exception as e:
+            logger.error(e)
+            return JsonResponse({'code':RETCODE.DBERR,'errmsg':'添加邮箱失败'})
+        # 生产密文链接码
+        user_id=request.user.id
+        verify_url=generate_verify_email_url(user_id,email)
+        # 发送邮箱验证邮件
+        send_verify_email.delay(email,verify_url)
+        # 响应结果
+        return JsonResponse({'code': RETCODE.OK, 'errmsg': '添加邮箱成功'})
+
+class VerifyEmailView(View):
+    """验证邮箱"""
+
+    def get(self,request):
+        # 接受参数
+        token=request.GET.get('token')
+        # 校验参数
+        if not token:
+            return HttpResponseForbidden('缺少token验证信息')
+        # 从token中提前用户信息user_id=>user
+        user=check_verify_email_token(token)
+        if not user:
+            return HttpResponseBadRequest('无效的请求token')
+        # 将用户的email_active设置为True
+        try:
+            user.email_active=True
+            user.save()
+        except Exception as e:
+            logger.error(e)
+            return HttpResponseServerError('激活邮件失败')
+        # 响应结果：重定向到用户中心
+        return redirect(reverse('users:info'))

@@ -49,6 +49,7 @@ let vm = new Vue({
                     email: this.email
                 }, {
                     headers: {
+                        // put的请求要验证，固定写法
                         'X-CSRFToken':getCookie('csrftoken')
                     },
                     responseType: 'json'
