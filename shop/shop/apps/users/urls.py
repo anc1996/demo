@@ -18,4 +18,6 @@ urlpatterns = [
     re_path(r'^emails/$',EmailView.as_view()),
     # 验证邮箱
     re_path(r'^emails/verification/$',VerifyEmailView.as_view()),
+    #
+    re_path(r'^addresses/$',AddressView.as_view(),name='address'),
 ]

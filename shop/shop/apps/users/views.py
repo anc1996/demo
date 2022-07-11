@@ -23,6 +23,7 @@ from shop.utils.views import LoginRequiredJSONMixin
     5、判断是否登录，为用户中心和我的订单做准备
     6、用户中心
     7、添加邮箱
+    8、收货地址
 '''
 # 创建日志输出器
 logger=logging.getLogger('django')
@@ -264,3 +265,13 @@ class VerifyEmailView(View):
             return HttpResponseServerError('激活邮件失败')
         # 响应结果：重定向到用户中心
         return redirect(reverse('users:info'))
+
+
+class AddressView(LoginRequiredMixin,View):
+    """用户收获地址"""
+
+    def get(self,request):
+        return render(request,'user_center_site.html')
+
+
+

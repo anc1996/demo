@@ -1,9 +1,20 @@
 from django.core.mail import send_mail
 from django.conf import settings
+import logging
 from celery_tasks.main import celery_app
 
-@celery_app.task(name='send_verify_email') # name给任务起别名
-def send_verify_email(to_email,verify_url):
+
+# bind：保证task对象会作为第一个参数自动传入
+# name：异步任务别名
+# retry_backoff：异常自动重试的时间间隔 第n次(retry_backoff×2^(n-1))s
+# max_retries：异常自动重试次数的上限
+
+# 创建日志输出器
+logger=logging.getLogger('send_email')
+
+
+@celery_app.task(bind=True,name='send_verify_email',retry_backoff=3) # name给任务起别名
+def send_verify_email(self,to_email,verify_url):
     """
     定义发送验证邮件
     :param to_email: 收件人
@@ -39,4 +50,9 @@ def send_verify_email(to_email,verify_url):
      raised unexpected: ImproperlyConfigured('Requested setting EMAIL_FROM, but settings are not configured. 
      You must either define the environment variable DJANGO_SETTINGS_MODULE or call settings.configure() before accessing settings.')
     """
-    send_mail(subject=subject,message='',from_email=settings.EMAIL_FROM,recipient_list=[to_email],html_message=html_message)
+    try:
+        send_mail(subject=subject,message='',from_email=settings.EMAIL_FROM,recipient_list=[to_email],html_message=html_message)
+    except Exception as e:
+        # 触发错误重试：最多3次
+        logger.error(e)
+        raise self.retry(exec=e,max=3)
