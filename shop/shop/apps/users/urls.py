@@ -18,6 +18,16 @@ urlpatterns = [
     re_path(r'^emails/$',EmailView.as_view()),
     # 验证邮箱
     re_path(r'^emails/verification/$',VerifyEmailView.as_view()),
-    #
+    # 显示用户地址页面
     re_path(r'^addresses/$',AddressView.as_view(),name='address'),
+    # 新增用户地址
+    re_path(r'^addresses/create/$',CreateAddressView.as_view()),
+    # 修改用户地址
+    re_path(r'^addresses/(?P<address_id>\d+)/$',UpdateDestroyAddressView.as_view()),
+    # 设置用户默认地址
+    re_path(r'^addresses/(?P<address_id>\d+)/default/$',DefaultAddressView.as_view()),
+    # 设置收货人地址的标题
+    re_path(r'^addresses/(?P<address_id>\d+)/title/$',UpdateTitleAddressView.as_view()),
+    # 修改密码
+    re_path(r'^password/$',ChangePasswordView.as_view(),name='pass'),
 ]
