@@ -1,5 +1,5 @@
 from django.db import models
-
+from fdfs_client.client import Fdfs_client
 from shop.utils.models import BaseModel
 # Create your models here.
 

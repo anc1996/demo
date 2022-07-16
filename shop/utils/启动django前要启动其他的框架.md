@@ -19,3 +19,5 @@ celery -A celery_tasks.main worker -l info
 ```
 celery -A celery_tasks.main worker -l info -P eventlet -c 1000
 ```
+
+## 启动docker的fastdfs

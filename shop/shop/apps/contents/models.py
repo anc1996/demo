@@ -2,6 +2,7 @@ from django.db import models
 
 from shop.utils.models import BaseModel
 # Create your models here.
+
 class ContentCategory(BaseModel):
     """广告内容类别"""
     # 广告类别名称
@@ -19,7 +20,7 @@ class ContentCategory(BaseModel):
 
 class Content(BaseModel):
     """广告内容"""
-    # 广告类别id
+    # 广告内容类别id
     category = models.ForeignKey(ContentCategory,on_delete=models.PROTECT,verbose_name='类别')
     # 广告标题
     title = models.CharField(max_length=100, verbose_name='标题')

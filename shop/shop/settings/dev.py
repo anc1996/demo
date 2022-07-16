@@ -219,6 +219,10 @@ LOGGING = {
     'disable_existing_loggers': False,  # 是否禁用已经存在的日志器
     'formatters': {  # 日志信息显示的格式
         'verbose': {
+            # asctime。默认情况下，它的格式为“2003-07-0816:49:45,896”
+            # levelname。消息的文本日志记录级别(‘ DEBUG’、‘ INFO’、‘ WARING’、‘ ERROR’、‘ CRITAL’)。
+            # module：模块(文件名的名称部分)。
+            # lineno：行号
             'format': '%(levelname)s %(asctime)s %(module)s %(lineno)d %(message)s'
         },
         'simple': {
@@ -255,10 +259,11 @@ LOGGING = {
     }
 }
 
-# 指定自定义用户的模型类  值的语法：'子应用.用户模型类'
+# 指定自定义用户的模型类  值的语法：'子应用.用户模型类'，用户认证系统中的用户模型类
 AUTH_USER_MODEL = "users.User"
 
-# 多用户登录，指定自定义用户认证后端
+# 多用户登录，指定自定义用户认证后端要使用的认证后端列表在 AUTHENTICATION_BACKENDS 配置中指定。
+# 这应该是一个指向知道如何验证的 Python 类的 Python 路径名列表。这些类可以是 Python 路径上的任何地方。
 AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend']
 
 # 判断用户是否登录，指定未登录用户重定向的地址
@@ -279,3 +284,9 @@ EMAIL_FROM = 'shop<834195283@qq.com>' # 发件人抬头
 
 # 邮箱验证链接
 EMAIL_VERIFY_URL = 'http://127.0.0.1:8000/emails/verification/'
+
+# 指定自定义的Django文件存储类
+DEFAULT_FILE_STORAGE='shop.utils.fastdfs.fdfs_storage.FastDFSStorage'
+
+# FastDFS相关参数
+FDFS_BASE_URL = 'http://103.81.85.134:8888/'
