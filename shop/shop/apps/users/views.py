@@ -15,6 +15,7 @@ from .models import User,Address
 from celery_tasks.email.tasks import send_verify_email
 from .utils import generate_verify_email_url,check_verify_email_token
 from shop.utils.views import LoginRequiredJSONMixin
+from goods.models import *
 
 # Create your views here.
 ''' 1、提供用户注册页面,判断用户名是否重复注册,判断手机号是否重复注册
@@ -25,6 +26,7 @@ from shop.utils.views import LoginRequiredJSONMixin
     6、展示，用户中心
     7、添加邮箱,验证邮箱
     8、新增、删除、修改用户收获地址，设置用户默认地址，修改收货人地址的标题
+    9、用户浏览记录
 '''
 # 创建日志输出器
 logger=logging.getLogger('django')
@@ -533,3 +535,69 @@ class ChangePasswordView(LoginRequiredMixin, View):
         response.delete_cookie('username')
         # 响应密码修改结果：重定向到登录界面
         return response
+
+class UserBrowseHistory(LoginRequiredJSONMixin, View):
+    """用户浏览记录"""
+
+    def post(self, request):
+        """保存用户浏览记录"""
+        # 接收参数
+        json_dict = json.loads(request.body.decode())
+        sku_id = json_dict.get('sku_id')
+        user_id=request.user.id
+        # 校验参数
+        try:
+            sku=SKU.objects.get(id=sku_id)
+        except SKU.DoesNotExist:
+            return HttpResponseForbidden('浏览商品不存在')
+        # 保存sku_id到redis
+        redis_conn = get_redis_connection('history')
+        pl = redis_conn.pipeline()  # 管道一次性操作
+        # 先去重,用于从列表 key 中删除前 count 个值等于 element 的元素。
+        # count > 0: 从头到尾删除值为 value 的元素。
+        # count = 0: 移除所有值为 value 的元素。
+        pl.lrem('history_%s' % user_id, 0, sku_id)
+        # 再存储,将一个或多个值插入到列表key 的头部。
+        # LPUSH mylist a b c，返回的列表是 c 为第一个元素， b 为第二个元素， a 为第三个元素。
+        pl.lpush('history_%s' % user_id, sku_id)
+        # 最后截取,用于修剪(trim)一个已存在的 list，这样 list 就会只包含指定范围的指定元素。
+        pl.ltrim('history_%s' % user_id, 0, 11)
+        pl.execute()
+        # 响应结果
+        return JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK'})
+
+    def get(self, request):
+        """获取用户浏览记录"""
+        # 获取Redis存储的sku_id列表信息
+        redis_conn = get_redis_connection('history')
+        user_id=request.user.id
+        # 返回列表中指定区间内的元素，区间以偏移量 START 和 END 指定。
+        # 其中 0 表示列表的第一个元素， 1 表示列表的第二个元素
+        sku_id_list=redis_conn.lrange('history_%s' % user_id, 0,-1)
+        # 根据sku_ids列表数据，查询出商品sku信息
+        skus = []
+        '''
+        {
+            "code": "0",
+            "errmsg": "OK",
+            "skus": [
+                {
+                    "id": 6,
+                    "name": "Apple iPhone 8 Plus (A1864) 256GB 深空灰色 移动联通电信4G手机",
+                    "default_image_url": "http://image.meiduo.site:8888/group1/M00/00/02/CtM3BVrRbI2ARekNAAFZsBqChgk3141998",
+                    "price": "7988.00"
+                },
+                ......
+            ]
+        }
+        '''
+        for sku_id in sku_id_list:
+            sku=SKU.objects.get(id=sku_id)
+            skus.append(
+                {
+                    "id": sku.id,
+                    "name": sku.name,
+                    "default_image_url": sku.default_image.url,
+                    "price": sku.price
+                })
+        return JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'skus': skus})

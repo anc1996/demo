@@ -8,7 +8,7 @@ let vm = new Vue({
 		sku_id: sku_id,
         sku_price: sku_price,
         sku_count: 1,
-        sku_amount: 0,
+        sku_amount: 0, // 总价
         tab_content: {
 		    detail: true,
             pack: false,

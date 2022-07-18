@@ -165,6 +165,15 @@ CACHES = {
                 "PASSWORD": "qwe123"
             }
         },
+    # 存储用户浏览记录history
+        "history": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://103.81.85.134:6379/4",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "PASSWORD": "qwe123"
+            }
+        },
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "session"
