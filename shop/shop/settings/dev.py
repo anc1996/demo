@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'haystack',# 全文检索
+
     # 注册apps下子应用的user，用户模块
     'users',# 用户模块
     'contents',# 首页广告模块
@@ -56,6 +58,7 @@ INSTALLED_APPS = [
     'oauth',# 第三方登录
     'areas',# 省市区三级联动
     'goods',# 商品模块
+
 ]
 
 MIDDLEWARE = [
@@ -290,3 +293,19 @@ DEFAULT_FILE_STORAGE='shop.utils.fastdfs.fdfs_storage.FastDFSStorage'
 
 # FastDFS相关参数
 FDFS_BASE_URL = 'http://103.81.85.134:8888/'
+
+# Haystack
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine',
+        'URL': 'http://103.81.85.134:9200/', # Elasticsearch服务器ip地址，端口号固定为9200
+        'INDEX_NAME': 'shop', # Elasticsearch建立的索引库的名称
+    },
+}
+
+# 当添加、修改、删除数据时，自动生成索引,配置项保证了在Django运行起来后，有新的数据产生时，Haystack仍然可以让Elasticsearch实时生成新数据的索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+# 控制每页显示数量
+HAYSTACK_SEARCH_RESULTS_PER_PAGE=12
+

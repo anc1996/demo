@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponseNotFound,JsonResponse
+
 # 分页器（先规定每页多少文字，然后确定多少页）
 # 数据库中的记录就是文字，我们需要考虑在分页时每页的条数，然后得出多少页
 from django.core.paginator import Paginator,EmptyPage
@@ -96,3 +97,10 @@ class HotGoodsView(View):
                  'name':sku.name,'price':sku.price}
             )
         return JsonResponse({"code": RETCODE.OK,"errmsg": "OK","hot_skus":hot_skus})
+
+class DetailView(View):
+    """商品详情页"""
+
+    def get(self, request, sku_id):
+        """提供商品详情页"""
+        return render(request, 'detail.html')

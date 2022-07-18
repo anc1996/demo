@@ -41,4 +41,6 @@ urlpatterns = [
     re_path(r'^',include('areas.urls')),
     # goods
     re_path(r'^',include(('goods.urls','goods'), namespace='goods')),
+    # haystack
+    re_path(r'^search/',include('haystack.urls')),
 ]
