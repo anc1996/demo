@@ -91,4 +91,4 @@ class SMSCodeView(View):
         return JsonResponse({'code': RETCODE.OK, 'errmsg': '发送短信短信验证码成功'})
 
 # 创建日志输出器
-logger=logging.getLogger('django')
+logger=logging.getLogger('verifications')

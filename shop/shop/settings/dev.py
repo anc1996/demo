@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
     'haystack',# 全文检索
 
     # 注册apps下子应用的user，用户模块
@@ -58,6 +59,8 @@ INSTALLED_APPS = [
     'oauth',# 第三方登录
     'areas',# 省市区三级联动
     'goods',# 商品模块
+    'carts',# 购物车
+    'orders',# 订单
 
 ]
 
@@ -174,6 +177,15 @@ CACHES = {
                 "PASSWORD": "qwe123"
             }
         },
+    # 存储用户浏览记录history
+    "carts": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://103.81.85.134:6379/5",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": "qwe123"
+        }
+    },
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "session"
@@ -267,6 +279,26 @@ LOGGING = {
             'handlers': ['console', 'file'],  # 可以同时向终端与文件中输出日志
             'propagate': True,  # 是否继续传递日志信息
             'level': 'INFO',  # 日志器接收的一般的系统信息,DEBUG：排查故障时使用的低级别系统信息
+        },
+        'carts': {  # 定义了一个名为carts的日志器
+            'handlers': ['console', 'file'],  # 可以同时向终端与文件中输出日志
+            'propagate': True,  # 是否继续传递日志信息
+            'level': 'DEBUG',  # 日志器接收的一般的系统信息,DEBUG：排查故障时使用的低级别系统信息
+        },
+        'areas': {  # 定义了一个名为carts的日志器
+            'handlers': ['console', 'file'],  # 可以同时向终端与文件中输出日志
+            'propagate': True,  # 是否继续传递日志信息
+            'level': 'DEBUG',  # 日志器接收的一般的系统信息,DEBUG：排查故障时使用的低级别系统信息
+        },
+        'goods': {  # 定义了一个名为carts的日志器
+            'handlers': ['console', 'file'],  # 可以同时向终端与文件中输出日志
+            'propagate': True,  # 是否继续传递日志信息
+            'level': 'DEBUG',  # 日志器接收的一般的系统信息,DEBUG：排查故障时使用的低级别系统信息
+        },
+        'verifications': {  # 定义了一个名为carts的日志器
+            'handlers': ['console', 'file'],  # 可以同时向终端与文件中输出日志
+            'propagate': True,  # 是否继续传递日志信息
+            'level': 'DEBUG',  # 日志器接收的一般的系统信息,DEBUG：排查故障时使用的低级别系统信息
         },
     }
 }

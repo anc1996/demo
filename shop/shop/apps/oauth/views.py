@@ -14,7 +14,7 @@ from shop.utils.response_code import RETCODE
 from .models import OAuthQQUser
 from .utils import generate_access_token,check_access_token
 from users.models import User
-
+from carts.utils import *
 class QQAuthURLView(View):
     """
     提供QQ登录页面网址
@@ -78,6 +78,10 @@ class QQAuthUserView(View):
             response = redirect(next)
             # 为了实现在首页的右上角展示用户名信息，我们需要将用户名缓存到cookie中,有效期15天
             response.set_cookie('username', oauth_user.user.username, max_age=3600 * 24 * 15)
+
+            # 用户登录成功，合并cookie购物车到redis购物车
+            response = merge_cart_cookie_to_redis(request=request, user=oauth_user.user, response=response)
+
             return response
 
     def post(self, request):
@@ -134,6 +138,9 @@ class QQAuthUserView(View):
         response = redirect(next)
         # 为了实现在首页的右上角展示用户名信息，我们需要将用户名缓存到cookie中,有效期15天
         response.set_cookie('username', oauth_qq_user.user.username, max_age=3600 * 24 * 15)
+
+        # 用户登录成功，合并cookie购物车到redis购物车
+        response = merge_cart_cookie_to_redis(request=request, user=oauth_qq_user.user, response=response)
         return response
 
 

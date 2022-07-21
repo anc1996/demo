@@ -16,7 +16,7 @@ from celery_tasks.email.tasks import send_verify_email
 from .utils import generate_verify_email_url,check_verify_email_token
 from shop.utils.views import LoginRequiredJSONMixin
 from goods.models import *
-
+from carts.utils import merge_cart_cookie_to_redis
 # Create your views here.
 ''' 1、提供用户注册页面,判断用户名是否重复注册,判断手机号是否重复注册
     2、提供登录页面
@@ -94,6 +94,9 @@ class RegisterView(View):
         response.set_cookie('username', user.username, max_age=3600 * 24 * 15)
         # redirect
         # print(reverse('contents:index'))  # /
+        # 用户登录成功，合并cookie购物车到redis购物车
+        response=merge_cart_cookie_to_redis(request=request, user=user, response=response)
+
         return response
 
 
@@ -176,6 +179,9 @@ class LoginView(View):
             response = redirect(reverse('contents:index'))
         # 为了实现在首页的右上角展示用户名信息，我们需要将用户名缓存到cookie中,有效期15天
         response.set_cookie('username', user.username, max_age=3600 * 24 * 15)
+
+        # 用户登录成功，合并cookie购物车到redis购物车
+        response=merge_cart_cookie_to_redis(request=request, user=user, response=response)
         return response
 
 class LogoutView(View):
