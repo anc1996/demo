@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'goods',# 商品模块
     'carts',# 购物车
     'orders',# 订单
+    'payment',# 支付
 
 ]
 
