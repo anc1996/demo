@@ -7,6 +7,7 @@ from users.models import User, Address
 
 class OrderInfo(BaseModel):
     """订单信息：一"""
+
     PAY_METHODS_ENUM = {"CASH": 1,"ALIPAY": 2} # 支付方式，以后判断用的
     PAY_METHOD_CHOICES = ((1, "货到付款"),(2, "支付宝"),) # 支付选择
     ORDER_STATUS_ENUM = { # 以后判断用的
@@ -24,6 +25,7 @@ class OrderInfo(BaseModel):
         (5, "已完成"),
         (6, "已取消"),
     )
+
     order_id = models.CharField(max_length=64, primary_key=True, verbose_name="订单号")
     user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="下单用户")
     address = models.ForeignKey(Address, on_delete=models.PROTECT, verbose_name="收货地址")
@@ -40,7 +42,6 @@ class OrderInfo(BaseModel):
 
     def __str__(self):
         return self.order_id
-
 
 class OrderGoods(BaseModel):
     """订单商品：多"""
