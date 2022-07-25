@@ -14,7 +14,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os,sys
 from pathlib import Path
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # print(BASE_DIR)
@@ -51,6 +50,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'haystack',# 全文检索
+    # 'django_crontab', # 定时任务,定时刷新首页
+    "django_apscheduler",# 定时任务
+    'scheduler',# 首页定时更新
 
     # 注册apps下子应用的user，用户模块
     'users',# 用户模块
@@ -356,3 +358,13 @@ ALIPAY_APPID = '2021000121630764'
 ALIPAY_DEBUG = True
 ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do'
 ALIPAY_RETURN_URL = 'http://127.0.0.1:8000/payment/status/'
+
+# # 定时器
+# CRONJOBS = [
+#     # 每1分钟生成一次首页静态文件
+#     ('*/1 * * * *', 'contents.crons.generate_static_index_html', '>> '+os.path.join(os.path.dirname(BASE_DIR),'logs/crontab.log')),
+# ]
+#
+# # 定时器指定中文编码格式
+# CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
+

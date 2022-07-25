@@ -49,4 +49,6 @@ urlpatterns = [
     re_path(r'^',include(('orders.urls','orders'), namespace='orders')),
     # payment
     re_path(r'^',include(('payment.urls','payment'), namespace='payment')),
+    # scheduler
+    re_path(r'^',include('scheduler.urls')),
 ]

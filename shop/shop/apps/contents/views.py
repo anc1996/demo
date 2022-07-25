@@ -2,9 +2,14 @@ from django.shortcuts import render,reverse
 from django.views import View
 from collections import OrderedDict
 
+
+
 from contents.utils import get_categories
 from goods.models import *
 from contents.models import *
+
+
+
 # Create your views here.
 class IndexView(View):
     '''
