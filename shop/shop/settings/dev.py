@@ -351,3 +351,8 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 # 控制每页显示数量
 HAYSTACK_SEARCH_RESULTS_PER_PAGE=12
 
+# 支付宝
+ALIPAY_APPID = '2021000121630764'
+ALIPAY_DEBUG = True
+ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do'
+ALIPAY_RETURN_URL = 'http://127.0.0.1:8000/payment/status/'

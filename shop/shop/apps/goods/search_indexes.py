@@ -19,4 +19,5 @@ class SKUIndex(indexes.SearchIndex, indexes.Indexable):
     # result.objects: 当前遍历出来的SKU对象。
     def index_queryset(self, using=None):
         """返回要建立索引的数据查询集"""
+
         return self.get_model().objects.filter(is_launched=True)
