@@ -122,7 +122,7 @@ WSGI_APPLICATION = 'shop.wsgi.application'
 
 # 配置mysql数据库
 DATABASES = {
-    'default': {
+    'default': {# 写
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.mysql',
@@ -131,7 +131,17 @@ DATABASES = {
         'USER': 'wenming',  # 用户名
         'PASSWORD': '123456',  # 密码
         'NAME': 'shop',  # 指定数据库
-    }
+    },
+    'slave': {# 读
+            # 'ENGINE': 'django.db.backends.sqlite3',
+            # 'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '103.81.85.134',  # 主机
+            'PORT': '3307',  # 端口号
+            'USER': 'root',  # 用户名
+            'PASSWORD': 'qwe123',  # 密码
+            'NAME': 'shop',  # 指定数据库
+        }
 }
 
 # caches 缓存,配置redis数据库，分库缓存
@@ -368,3 +378,5 @@ ALIPAY_RETURN_URL = 'http://127.0.0.1:8000/payment/status/'
 # # 定时器指定中文编码格式
 # CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
 
+# mysql读写分离路由
+DATABASE_ROUTERS = ['shop.utils.db_router.MasterSlaveDBRouter']

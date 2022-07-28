@@ -56,6 +56,5 @@ def test_job():
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(html_text)
 
-register_events(scheduler)
 # 启动定时器
 scheduler.start()

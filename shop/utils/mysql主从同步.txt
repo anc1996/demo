@@ -1,0 +1,61 @@
+主从配置：mysql宝塔面板
+
+
+docker run -d --name mysql-slave -e MYSQL_ROOT_PASSWORD=qwe123 
+--network=host
+-v /home/mysql_slave/conf/my.cnf:/etc/mysql/my.cnf
+-v /home/mysql_slave/data:/var/lib/mysql
+mysql:5.7
+
+docker container ls --all
+docker container start mysql-slave
+docker logs mysql-slave
+
+docker container rm mysql-slave
+docker container stop mysql-slave
+docker exec -it mysql-slave bash
+
+进入从机界面
+mysql -u root -p -h 127.0.0.1 --port=3307
+密码：qwe123
+
+从机：
+show databases;
+show slave status \G;
+
+
+从主机导出数据
+
+mysqldump -u root -p --all-databases > databases.sql
+密码：qwe123
+mysqldump -u root -p shop > shop.sql
+密码：qwe123
+
+
+导入数据到从机
+mysql -u root -p --port=3307 shop < shop.sql 
+密码：qwe123
+
+
+进入主机mysql界面
+mysql -u root -p 
+密码：qwe123
+
+主机赋予salve账号
+GRANT REPLICATION SLAVE ON *.* TO 'slave'@'%' identified by 'slave';
+用户名：salve  密码:slave
+
+FLUSH PRIVILEGES;
+
+SHOW MASTER STATUS;
+
+进入从机界面
+mysql -u root -p -h 127.0.0.1 --port=3307
+密码：qwe123
+
+从机：
+change master to MASTER_HOST='103.81.85.134', master_user='slave', master_password='slave',master_log_file='mysql-bin.000009', master_log_pos=390;
+start SLAVE;
+STOP SLAVE;
+show slave status \G;
+
