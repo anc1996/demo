@@ -16,7 +16,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-# print(BASE_DIR)
+print('BASE_DIR:',os.path.dirname(BASE_DIR))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-2gn%-!a%xgkw=o1m$dat8!ry)3vfp)cu)k-%n88i1v_@kykp0_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ov-vo.cn','127.0.0.1']
+ALLOWED_HOSTS = ['www.freelearn.top','127.0.0.1']
 
 
 # Application definition
@@ -35,7 +35,6 @@ ALLOWED_HOSTS = ['ov-vo.cn','127.0.0.1']
 # print(sys.path)
 
 # 追加导包路径指向apps
-print(BASE_DIR)
 sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
 
 
@@ -237,7 +236,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 # 指定加载静态文件路由的前缀
-STATIC_URL = 'static/'
+# 配置收集静态文件存放的目录
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
+
+STATIC_URL = '/static/'
 # 告知系统静态文件在哪里
 STATICFILES_DIRS = [
     os.path.join(os.path.dirname(BASE_DIR), 'static'),
@@ -327,9 +329,9 @@ AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend']
 LOGIN_URL="/login/"
 
 # QQ登录参数
-QQ_CLIENT_ID = '102016086'
-QQ_CLIENT_SECRET = 'FPM55xe8PSIuITSE'
-QQ_REDIRECT_URI = 'http://ov-vo.cn/oauth_callback'
+QQ_CLIENT_ID = '101863920'
+QQ_CLIENT_SECRET = '3797609485bd149b4f2e7efb48315b74'
+QQ_REDIRECT_URI = 'http://www.freelearn.top/oauth_callback'
 
 # 配置邮箱
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # 指定邮件后端
@@ -380,3 +382,5 @@ ALIPAY_RETURN_URL = 'http://127.0.0.1:8000/payment/status/'
 
 # mysql读写分离路由
 DATABASE_ROUTERS = ['shop.utils.db_router.MasterSlaveDBRouter']
+# 配置收集静态文件存放的目录
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'collect_static')

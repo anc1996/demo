@@ -8,6 +8,7 @@ def main():
     """Run administrative tasks."""
     # 执行配置文件代码
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'shop.settings.dev')
+    # os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'shop.settings.productsetting')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

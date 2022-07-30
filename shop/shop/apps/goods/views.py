@@ -118,9 +118,11 @@ class DetailView(View):
         breadcrumb = get_breadcrumb(sku.category)
 
         # 构建当前商品的规格键
+        # 获取当前显示商品的所有规格，例如sku=2
         sku_specs = sku.specs.order_by('spec_id')
         sku_key = []
         for spec in sku_specs:
+            # 添加该规格的所有选项 ，sku-key对应规格id为[1，3，7]
             sku_key.append(spec.option.id)
 
         # 获取当前商品的所有SKU
@@ -136,8 +138,10 @@ class DetailView(View):
                 key.append(spec.option.id)
             # 向规格参数-sku字典添加记录
             spec_sku_map[tuple(key)] = s.id
+        # spec_sku_map --> {(1,4,7):1,(1,3,7):2}
 
-        # 获取当前商品的规格信息
+
+        # 获取当前商品的这一类所有的规格信息
         goods_specs = sku.spu.specs.order_by('id')
         # 若当前sku的规格信息不完整，则不再继续
         if len(sku_key) < len(goods_specs):

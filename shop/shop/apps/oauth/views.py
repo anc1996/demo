@@ -104,7 +104,8 @@ class QQAuthUserView(View):
             return HttpResponseForbidden('请输入8-20位的密码')
         # 判断短信验证码是否一致
         redis_conn = get_redis_connection('VerifyCode')
-        sms_code_server = redis_conn.get('sms_%s' % mobile).decode()
+        sms_code_server = redis_conn.get('sms_%s' % mobile)
+        print(sms_code_server)
         if sms_code_server is None:
             return render(request, 'oauth_callback.html', {'sms_code_errmsg': '无效的短信验证码'})
         if sms_code_client != sms_code_server.decode():
