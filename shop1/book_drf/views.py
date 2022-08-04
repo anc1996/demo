@@ -10,7 +10,7 @@ class Books(View):
 
     def get(self,request):
         # 1、查询所有图书对象
-        books=BookInfo.objects.all()
+        books=BookInfo.objects.all().filter(is_delete=False)
         bookserializer=BookSerializer(books,many=True)
         return JsonResponse(bookserializer.data, safe=False)
 

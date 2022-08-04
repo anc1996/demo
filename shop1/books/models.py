@@ -9,6 +9,7 @@ class BookInfo(models.Model):
     commentcount = models.IntegerField(default=0, verbose_name='评论量') # comentcount
     is_delete = models.BooleanField(default=False, verbose_name='逻辑删除')
 
+
     class Meta:
         db_table = 'bookinfo'  # 指明数据库表名
         verbose_name = '图书'  # 在admin站点中显示的名称
@@ -29,6 +30,7 @@ class PeopleInfo(models.Model):
     description = models.CharField(max_length=200, null=True, verbose_name='描述信息')
     book = models.ForeignKey(BookInfo, on_delete=models.CASCADE, verbose_name='图书')  # 外键
     is_delete = models.BooleanField(default=False, verbose_name='逻辑删除')
+
 
     class Meta:
         db_table = 'peopleinfo'
