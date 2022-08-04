@@ -6,6 +6,12 @@ from shop.utils.models import BaseModel
 
 class User(AbstractUser):
     '''自定义用户模型类'''
+    # AbstractUser父类：
+    '''
+    创建用户必选： username、password
+    创建用户可选：email、first_name、last_name、last_login、date_joined、is_active 、is_staff、is_superuse
+    判断用户是否通过认证：is_authenticated
+    '''
     mobile=models.CharField(max_length=11,unique=True,verbose_name='手机号')
     email_active = models.BooleanField(default=False, verbose_name='邮箱验证状态')
     default_address = models.ForeignKey('Address', related_name='users', null=True, blank=True,

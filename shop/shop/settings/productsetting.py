@@ -234,7 +234,7 @@ USE_TZ = True
 # 配置收集静态文件存放的目录
 STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 # 告知系统静态文件在哪里
 STATICFILES_DIRS = [
     os.path.join(os.path.dirname(BASE_DIR), 'static'),
@@ -360,7 +360,7 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = 12
 
 # 支付宝
 ALIPAY_APPID = '2021000121630764'
-ALIPAY_DEBUG = True
+ALIPAY_DEBUG = False
 ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do'
 ALIPAY_RETURN_URL = 'http://103.81.85.134:80/payment/status/'
 
@@ -375,6 +375,5 @@ ALIPAY_RETURN_URL = 'http://103.81.85.134:80/payment/status/'
 
 # mysql读写分离路由
 DATABASE_ROUTERS = ['shop.utils.db_router.MasterSlaveDBRouter']
-print('STATIC_ROOT：', os.path.join(os.path.dirname(BASE_DIR), 'collect_static'))
 # 配置收集静态文件存放的目录
 STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'collect_static')

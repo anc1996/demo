@@ -34,9 +34,8 @@ ALLOWED_HOSTS = ['www.freelearn.top','127.0.0.1']
 # 查看导包路径
 # print(sys.path)
 
-# 追加导包路径指向apps
+# 追加导包路径指向apps,以便于注册应用做的更加简便。
 sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
-
 
 INSTALLED_APPS = [
     # 第一次迁移会读取这里的子应用，然后通通都迁移
@@ -318,6 +317,7 @@ LOGGING = {
     }
 }
 
+#Django用户模型类是通过全局配置项 AUTH_USER_MODEL 决定的
 # 指定自定义用户的模型类  值的语法：'子应用.用户模型类'，用户认证系统中的用户模型类
 AUTH_USER_MODEL = "users.User"
 
