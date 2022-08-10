@@ -7,6 +7,15 @@ from book_drf.serializer import BookSerializer
 
 # Create your views here.
 
+"""
+以action装饰器装饰的方法名会作为action动作名，与list、retrieve等同。
+action装饰器可以接收两个参数：
+    methods: 该action支持的请求方式，列表传递
+    detail: 表示是action中要处理的是否是视图资源的对象（即是否通过url路径获取主键）
+            True 表示使用通过URL获取的主键对应的数据对象
+            False 表示不使用URL获取主键
+"""
+
 class Books(GenericViewSet):
     """获取所有图书"""
     """获取所有图书"""
@@ -23,6 +32,7 @@ class Books(GenericViewSet):
             return BookSerializer
         else:
             return BookSerializer
+
 
     @action(methods=['get'],detail=False)
     # 自定义方法名，代替get方法,在urls路由匹配对应方法名

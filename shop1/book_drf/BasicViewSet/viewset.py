@@ -7,20 +7,21 @@ from book_drf.serializer import BookSerializer
 
 # Create your views here.
 """
-使用视图集ViewSet，可以将一系列逻辑相关的动作放到一个类中：
-list() 提供一组数据
-retrieve() 提供单个数据
-create() 创建数据
-update() 保存数据
-destory() 删除数据
+使用视图集ViewSet，可以将一系列逻辑相关的动作放到一个类中：并且要在路由设置方法对应的操作。
+    list() 提供一组数据
+    retrieve() 提供单个数据
+    create() 创建数据
+    update() 保存数据
+    destory() 删除数据
+    
 ViewSet视图集类不再实现get()、post()等方法，而是实现动作 action 如 list() 、create() 等。
+    
+ViewSet继承自APIView，作用也与APIView基本类似，提供了身份认证、权限校验、流量管理等。
+    
+在ViewSet中，没有提供任何动作action方法，需要我们自己实现action方法。
 """
 
-'''
-ViewSet继承自APIView，作用也与APIView基本类似，提供了身份认证、权限校验、流量管理等。
-在ViewSet中，没有提供任何动作action方法，需要我们自己实现action方法。
 
-'''
 class Books(ViewSet):
     """获取所有图书"""
     # 自定义方法名，代替get方法,在urls路由匹配对应方法名
@@ -53,20 +54,7 @@ class Books(ViewSet):
             return Response({'error': '当前数据不存在'}, status=400)
         bookserializer = BookSerializer(book)
         return Response(bookserializer.data)
-
-
-class BookView(ViewSet):
-    """查询单一数据"""
-
-    def get(self, request, pk):
-        # 1、查询数据对象
-        try:
-            book = BookInfo.objects.get(id=pk)
-        except BookInfo.DoesNotExist:
-            return Response({'error': '当前数据不存在'}, status=400)
-        bookserializer = BookSerializer(book)
-        return Response(bookserializer.data)
-
+    
     """更新单一图书"""
 
     def update(self, request, pk):
@@ -84,6 +72,10 @@ class BookView(ViewSet):
         bookserializer.save()
         # 6、返回结果
         return Response(bookserializer.data)
+
+
+
+
 
     
 

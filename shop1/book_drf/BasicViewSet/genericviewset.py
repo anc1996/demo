@@ -63,26 +63,7 @@ class Books(GenericViewSet):
         bookserializer = self.get_serializer(book)
         return Response(bookserializer.data)
 
-
-class BookView(GenericViewSet):
-    """查询单一数据"""
-    # 1、要指定当前类视图使用的查询数据
-    queryset = BookInfo.objects.all()
-    # 2、要指定当前视图使用的序列化器
-    serializer_class = BookSerializer
-    def retrieve(self, request, pk):
-        # 1、查询数据对象
-        try:
-            # get_object(self) 返回详情视图所需的模型类数据对象，
-            # 默认使用lookup_field参数来过滤queryset。 在试图中可以调用该方法获取详情信息的模型类对象。
-            book =self.get_object() # 从查询集获取指定的单一数据对象
-        except BookInfo.DoesNotExist:
-            return Response({'error': '当前数据不存在'}, status=400)
-        bookserializer = self.get_serializer(book)
-        return Response(bookserializer.data)
-
     """更新单一图书"""
-
     def update(self, request, pk):
         # 1、获取数据
         book_dict=request.data
@@ -99,7 +80,17 @@ class BookView(GenericViewSet):
         # 6、返回结果
         return Response(bookserializer.data)
 
-
+    """删除单一图书"""
+    def destory(self, request, pk):
+        try:
+            # get_object(self) 返回详情视图所需的模型类数据对象，
+            # 默认使用lookup_field参数来过滤queryset。 在试图中可以调用该方法获取详情信息的模型类对象。
+            book = self.get_object()  # 从查询集获取指定的单一数据对象
+        except BookInfo.DoesNotExist:
+            return Response({'error': '当前数据不存在'}, status=400)
+        bookserializer = self.get_serializer(book)
+        book.delete()
+        return Response(bookserializer.data)
 
 
 

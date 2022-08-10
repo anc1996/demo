@@ -18,6 +18,7 @@ RetrieveModelMixin：获取单一数据
 class Books(GenericAPIView,CreateModelMixin,ListModelMixin):
 
     """
+    GenericAPIView
     支持定义的属性：
     列表视图与详情视图通用：
         queryset 列表视图的查询集

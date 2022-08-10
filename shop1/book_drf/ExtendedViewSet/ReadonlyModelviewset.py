@@ -24,4 +24,4 @@ class Books(ReadOnlyModelViewSet):
     queryset = BookInfo.objects.all()
     # 2、要指定当前视图使用的序列化器
     serializer_class = BookSerializer
-    # 由于ModelViewSet继承ModelMixin的list、retrieve方法,不需要写
+    # 由于ModelViewSet只继承ModelMixin的2个类list、retrieve方法,不需要写

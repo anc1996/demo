@@ -21,7 +21,6 @@ class Books(GenericAPIView):
     详情页视图使用：
         lookup_field 查询单一数据库对象时使用的条件字段，默认为'pk'
         lookup_url_kwarg 查询单一数据时URL中的参数关键字名称，默认与look_field相同
-
     """
     # 1、要指定当前类视图使用的查询数据
     queryset = BookInfo.objects.all()

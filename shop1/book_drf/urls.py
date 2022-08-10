@@ -26,28 +26,28 @@ urlpatterns = [
     re_path(r'^childmixinview/$', childmixinview.Books.as_view()),
     re_path(r'^childmixinview/(?P<pk>\d+)/$', childmixinview.BookView.as_view()),
     # ViewSet继承自APIView,它可以需要我们自己实现action方法。
-    re_path(r'^viewset/$', viewset.Books.as_view({'get': 'list', 'post': 'create'})),
+    re_path(r'^viewset/$', viewset.Books.as_view({'get': 'list', 'post': 'create','put':'update'})),
     re_path(r'^viewset/(?P<pk>\d+)/retrieve/$', viewset.Books.as_view({'get': 'retrieve'})),
-    re_path(r'^viewset/(?P<pk>\d+)/$', viewset.BookView.as_view({'put': 'update', 'get': 'retrieve'})),
     # GenericViewSet,继承自GenericAPIView与ViewSetMixi。作用也与GenericAPIVIew类似，它可以需要我们自己实现action方法。
-    re_path(r'^GenericViewSet/$', genericviewset.Books.as_view({'get': 'list', 'post': 'create'})),
+    re_path(r'^GenericViewSet/$', genericviewset.Books.as_view({'get': 'list', 'post': 'create','put': 'update','delete':'destory'})),
     re_path(r'^genericViewSet/(?P<pk>\d+)/retrieve/$', genericviewset.Books.as_view({'get': 'retrieve'})),
-    re_path(r'^GenericViewSet/(?P<pk>\d+)/$', genericviewset.BookView.as_view({'put': 'update', 'get': 'retrieve'})),
     # # ModelViewSet,继承自GenericAPIVIew与5个Mixin扩展类的子类视图集，它可以需要我们自己实现action方法。
     # re_path(r'^ModelViewSet/$', modelviewset.Books.as_view({'get': 'list', 'post': 'create'})),
     # re_path(r'^ModelViewSet/(?P<pk>\d+)/retrieve/$', modelviewset.Books.as_view({'get': 'retrieve'})),
-    # re_path(r'^ModelViewSet/(?P<pk>\d+)/$', modelviewset.BookView.as_view({'put': 'update', 'get': 'retrieve','delete':'destroy'})),
     # # ReadOnlyModelViewSet,,继承自GenericAPIVIew与2个只能读取扩展类的子类视图集，它可以需要我们自己实现action方法。
     # re_path(r'^ReadonlyModelviewset/$', ReadonlyModelviewset.Books.as_view({'get': 'list'})),
     # re_path(r'^ReadonlyModelviewset/(?P<pk>\d+)/retrieve/$', ReadonlyModelviewset.Books.as_view({'get': 'retrieve'})),
 ]
 # 自动生成路由，要结合视图集才能使用。
-# 创建路由对象
-# DefaultRouter与SimpleRouter的区别是，DefaultRouter会多附带一个默认的API根视图，返回一个包含所有列表视图的超链接响应数据。
+# 创建SimpleRouter路由对象
+router1=SimpleRouter()
 router=DefaultRouter()  #DefaultRouter,继承SimpleRouter
 # 第一个参数：Prefix-用于这组路由的 URL 前缀。
 # 第二个参数：Viewset-viewset 类。
-# Basename base_name 路由名称的前缀。如果取消设置，则基于视图集的 queryset 属性自动生成 basename，如果视图集有一个这样的属性的话
+"""
+DefaultRouter与SimpleRouter的区别是，DefaultRouter会多附带一个默认的API根视图，返回一个包含所有列表视图的超链接响应数据。
+"""
+# Basename base_name路由名称的前缀。如果取消设置，则基于视图集的 queryset 属性自动生成 basename，如果视图集有一个这样的属性的话
 router.register('ModelViewSet',modelviewset.Books,basename='ModelViewSet')  # ModelViewSet
 router.register('ReadonlyModelviewset',ReadonlyModelviewset.Books,basename='ReadonlyModelviewset') # ReadOnlyModelViewSet
 # 类中额外自定义的方法

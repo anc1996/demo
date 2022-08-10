@@ -1,6 +1,5 @@
 
 from rest_framework.views import APIView
-from rest_framework.request import Request
 from rest_framework.response import Response
 
 from books.models import BookInfo
@@ -60,7 +59,6 @@ class BookView(APIView):
         return Response(bookserializer.data)
 
     """更新单一图书"""
-
     def put(self, request, pk):
         # 1、获取数据
         book_dict=request.data

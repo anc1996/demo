@@ -5,10 +5,7 @@ from django.db.transaction import atomic
 from books.models import BookInfo
 # 如果需要序列化的数据中包含有其他关联对象，则对关联对象数据的序列化需要指明。
 class PeopleInfoSerializer(serializers.Serializer):
-    GENDER_CHOICES = (
-        (0, 'male'),
-        (1, 'female')
-    )
+    GENDER_CHOICES = ((0, 'male'),(1, 'female'))
     # 1、一种方法字段选项验证
     id = serializers.IntegerField(label='ID', read_only=True)
     name=serializers.CharField(label='名字',max_length=20)

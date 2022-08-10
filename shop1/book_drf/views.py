@@ -27,9 +27,7 @@ class Books(View):
             pub_date = request.POST.get('pub_date')
             readcount = request.POST.get('readcount')
             commentcount = request.POST.get('commentcount')
-            data_dict={
-                'name':name,'pub_date':pub_date,'readcount':readcount,'commentcount':commentcount
-            }
+            data_dict={'name':name,'pub_date':pub_date,'readcount':readcount,'commentcount':commentcount}
         else:
             # 前端json请求
             data=request.body.decode()
