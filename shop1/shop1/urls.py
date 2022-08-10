@@ -18,7 +18,7 @@ from django.urls import path,include,re_path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r'^',include('book.urls')),
-    re_path(r'^',include('books.urls')),
+    re_path(r'^book/',include('book.urls')),
+    re_path(r'^books/',include('books.urls')),
     re_path(r'^book_drf/',include('book_drf.urls')),
 ]

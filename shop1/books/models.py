@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # 准备书籍列表信息的模型类
 class BookInfo(models.Model):
     # 创建字段，字段类型...
