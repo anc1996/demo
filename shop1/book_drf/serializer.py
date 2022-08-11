@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from rest_framework import  serializers
+from rest_framework import serializers
 from django.db.transaction import atomic
 
 from books.models import BookInfo
@@ -8,8 +8,8 @@ class PeopleInfoSerializer(serializers.Serializer):
     GENDER_CHOICES = ((0, 'male'),(1, 'female'))
     # 1、一种方法字段选项验证
     id = serializers.IntegerField(label='ID', read_only=True)
-    name=serializers.CharField(label='名字',max_length=20)
-    description = serializers.CharField(max_length=200, allow_null=True, label='描述信息')
+    name=serializers.CharField(label='书名',max_length=20, help_text='书名')
+    description = serializers.CharField(max_length=200, allow_null=True, label='描述信息', help_text='图书介绍')
     # PrimaryKeyRelatedField，此字段将被序列化为关联对象的主键。
     # 包含read_only=True参数时，该字段将不能用作反序列化使用
     # book = serializers.PrimaryKeyRelatedField(label='图书', read_only=True)

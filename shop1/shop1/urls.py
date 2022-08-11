@@ -22,3 +22,4 @@ urlpatterns = [
     re_path(r'^books/',include('books.urls')),
     re_path(r'^book_drf/',include('book_drf.urls')),
 ]
+
