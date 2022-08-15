@@ -5,6 +5,7 @@
     <!--多组件嵌套使用 -->
     <Child01></Child01>
     <Child02></Child02>
+    <router-view>通过router路由使用多文件组件</router-view>
   </div>
 
 </template>
