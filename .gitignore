@@ -134,3 +134,6 @@ dmypy.json
 settings.py
 dev.py
 productsetting.py
+
+# vue
+node_modules

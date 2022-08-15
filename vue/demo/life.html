@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="vue.js"></script>
+</head>
+<body>
+<div id="app">
+  {{ message }}
+</div>
+
+<script type="text/javascript">
+    var app = new Vue({
+    el: '#app',
+    data: {
+        message: 'Hello Vue!'
+        },
+        beforeCreate:function () {
+            console.log('beforeCreate')
+        },
+        created:function () {
+            console.log('created')
+        },
+        beforeMount:function () {
+            console.log('beforeMount')
+        },
+        mounted:function () {
+            console.log('mounted')
+        },
+        beforeDestroy:function () {
+            console.log('beforeDestroy')
+        },
+        destroyed:function () {
+            console.log('destroyed')
+        }
+})
+</script>
+</body>
+</html>
