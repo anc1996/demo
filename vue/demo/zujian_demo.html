@@ -40,6 +40,7 @@
                     this.$emit('listen','hello')
                 }
             },
+            // 将局部组件注册到全局组件中
             components:{
                 // 要先定义局部组件c，意思在局部组件a前。才能加载。
                 jvbuzujian_c,
@@ -54,7 +55,7 @@
             'zujian_all', {
                 // 封装代码。加载局部组件
                 template:'<div>全局组件定义,{{name}}.<jvbuzujian_b></jvbuzujian_b>  <jvbuzujian_a v-bind:pro="name" v-on:listen="isShow"></jvbuzujian_a>  <button @click="add">点击add方法</button> </div>',
-                // 注册组件
+                // 将局部组件注册到全局组件中
                 components:{
                     jvbuzujian_a,
                     jvbuzujian_b,
@@ -69,6 +70,7 @@
                         alert('定义父组件add方法')
                     },
                     isShow:function (data){
+                        // data接受局部组件变量值
                         alert(data)
                     }
                 }

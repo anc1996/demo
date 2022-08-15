@@ -3,7 +3,7 @@ from rest_framework import status
 from django.db import DatabaseError
 from rest_framework.response import Response
 
-
+# 配置全局数据库异常捕获
 def exception_handler(exc, context):
     response = drf_exception_handler(exc, context)
 

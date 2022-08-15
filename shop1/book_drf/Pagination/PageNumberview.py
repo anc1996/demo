@@ -55,8 +55,10 @@ class Books(ModelViewSet):
     # http://127.0.0.1:8000/book_drf/orderfilter/?ordering=-readcount
     ordering_fields = '__all__'
 
-    # 指定分页器
+    # 指定分页器，会调用ModelMixin的list方法
     pagination_class = PageNum
+
+
     # 由于ModelViewSet继承ModelMixin的list、update、retrieve、destory、create方法,不需要写
 
 

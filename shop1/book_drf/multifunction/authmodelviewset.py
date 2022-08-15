@@ -43,7 +43,7 @@ class Books(ModelViewSet):
     # http://**?search=russell
     filter_backends = [SearchFilter]
     search_fields = ['name', 'readcount']
-    # search_fields = ['=username', '=email']
+    # search_fields = ['=name', '=readcount'] # 表示精确匹配
         # '^' Starts-with search.
         # '=' Exact matches.
         # '@' Full-text search. (Currently only supported Django's PostgreSQL backend.)
