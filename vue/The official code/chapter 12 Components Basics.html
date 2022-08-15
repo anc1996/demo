@@ -11,10 +11,13 @@
 	我们可以在一个通过 new Vue 创建的 Vue 根实例中，把这个组件作为自定义元素来使用：-->
 	<!-- 组件title属性赋值title1 -->
 	<button-counter title="title1 : " @clicknow="clicknow">
-		<h2>hi...h2</h2>
+		<h1>hi...h1</h1>
 	</button-counter>
-	<button-counter title="title2 : "></button-counter>
+	<button-counter title="title2 : " @clicknow="clicknow"></button-counter>
 </div>
+
+
+
 <script type="text/javascript">
 	// 定义一个名为 button-counter 的新组件
 Vue.component('button-counter', {
@@ -26,11 +29,11 @@ Vue.component('button-counter', {
 		  count: 0
 		}
 	},
-	template: '<div><h1>hi...</h1><button v-on:click="clickfun">{{title}} You clicked me {{ count }} times.</button><slot></slot></div>',
+	template: '<div> <h2>h2...h2</h2><button v-on:click="clickfun">{{title}} You clicked me {{ count }} times.</button><slot></slot>  </div>',
 	methods:{
 		clickfun : function () {
 			this.count ++;
-			// 触发当前实例上的事件。附加参数都会传给监听器回调。
+			// 触发当前实例上的事件。附加参数都会传给监听器回调。子组件参数传值给父组件
 			this.$emit('clicknow', this.count);
 		}
 	}
@@ -41,12 +44,17 @@ var vm = new Vue({
 		
 	},
 	methods:{
+		// button1＆button2触发次方法
 		clicknow : function (e) {
 			console.log(e);
 		}
 	}
 });
 </script>
+
+
+
+
 <style type="text/css">
 
 </style>

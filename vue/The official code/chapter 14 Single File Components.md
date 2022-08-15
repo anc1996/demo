@@ -20,3 +20,7 @@ cnpm install -g @vue/cli
 cnpm install -g webpack
 ```
 
+### 启动项目
+```
+vue ui
+```
