@@ -28,8 +28,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 ```
 常用的Vue项目的一个目录结构和每个文件的作用
 
- 
-
 project
 
 　dist　　　　　　　　　build，编译生成的包
@@ -81,7 +79,5 @@ project
 　package-lock.json　锁定安装包的版本号，保证开发人员的项目依赖一致
 
 　vue.config.js/webpack.config.js　　配置文件，一个是vue的，一个是webpack的，webpack的vue和react的都可以用，vue是专注于vue项目的。
------------------------------------
-Vue的目录结构
-https://blog.51cto.com/u_15127540/4252963
+
 ```
