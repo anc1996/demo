@@ -157,7 +157,7 @@ class LoginView(View):
         if not re.match(r'^[0-9A-Za-z]{8,20}$', password):
             return HttpResponseForbidden('请输入8-20位的密码')
         # 认证登录用户：使用账号查询用户是否存在，如果用户存在，再校验密码是否正确
-        user=authenticate(username=username,password=password)
+        user=authenticate(username=username,password=password,request=request)
         if user is None:
             return render(request, 'login.html', {'account_errmsg': '用户名或密码错误'})
         # 使用记住用户，确定状态保持周期
