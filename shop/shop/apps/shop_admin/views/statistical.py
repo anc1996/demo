@@ -8,7 +8,7 @@ from datetime import date,timedelta
 
 from users.models import User
 from goods.models import GoodsVisitCount
-from shop_admin.serializers.serializer import GoodsSerializer
+from shop_admin.serializers.Total_serializer import GoodsSerializer
 
 class UserTotalCountView(APIView):
     """用户总量统计"""
@@ -116,3 +116,4 @@ class GoodsDayView(APIView):
         # 序列化返回分类数量
         serializer=GoodsSerializer(data,many=True)
         return Response(serializer.data)
+

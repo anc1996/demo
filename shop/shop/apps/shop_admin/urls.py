@@ -1,6 +1,8 @@
 from django.urls import re_path
 from rest_framework_jwt.views import obtain_jwt_token
-from shop_admin.views import statistical
+from shop_admin.views import statistical,UsersView
+
+
 
 urlpatterns = [
     # 用户注册，反向解析写法：users.register
@@ -17,4 +19,6 @@ urlpatterns = [
     re_path(r'^statistical/month_increment/$', statistical.UserMonthCountView.as_view()),
     # 数据统计-当日每天用户访问商品的量
     re_path(r'^statistical/goods_day_views/$', statistical.GoodsDayView.as_view()),
+    # 用户管理
+    re_path(r'^users/$', UsersView.UserView.as_view()),
 ]
