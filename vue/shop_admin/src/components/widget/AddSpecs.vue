@@ -1,12 +1,12 @@
 <template>
 	<div class="add_user_wrap">
-    <el-button type="primary" size="small" @click="pop_show = true" class="pull-right">新增规格</el-button>    
+    <el-button type="primary" size="small" @click="pop_show = true" class="pull-right">新增规格</el-button>
     <el-dialog title="新增规格" :visible.sync="pop_show" append-to-body>
         <el-form :model="specsForm" status-icon :rules="rulesSpecsForm" ref="specsForm" label-width="100px">
           <el-form-item label="规格名称：" prop="name">
             <el-input type="text" v-model="specsForm.name" autocomplete="off" size="small"></el-input>
-          </el-form-item>          
-          <el-form-item label="规格：" prop="spu_id">
+          </el-form-item>
+          <el-form-item label="SPU商品：" prop="spu_id">
             <el-select v-model="specsForm.spu_id" size="small">
               <el-option
                 v-for="item in goods_list"
@@ -22,7 +22,7 @@
           </el-form-item>
         </el-form>
     </el-dialog>
-	</div>  
+	</div>
 </template>
 
 <script>
@@ -34,10 +34,10 @@ export default {
     var validateName = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('规格名不能为空'));
-        } else {         
-          callback()          
+        } else {
+          callback()
         }
-    }; 
+    };
     return {
       pop_show:false,
       goods_list:[],
@@ -61,17 +61,17 @@ export default {
             headers: {
               'Authorization': 'JWT ' + token
             },
-            responseType: 'json'           
+            responseType: 'json'
         })
         .then(dat=>{
             if(dat.status==201){
               this.$message({
                 type: 'success',
                 message: '添加规格成功!'
-              }); 
-              this.pop_show = false; 
-              this.$emit('fnResetTable');           
-              this.resetForm('spcesForm');                                     
+              });
+              this.pop_show = false;
+              this.$emit('fnResetTable');
+              this.resetForm('spcesForm');
             }
         }).catch(err=>{
             if(err.response.status==400){
@@ -89,7 +89,7 @@ export default {
                   type:'info',
                   message:errmsg.non_field_errors[0]
                 });
-              }           
+              }
            }
         });
     },
@@ -101,8 +101,8 @@ export default {
         responseType: 'json',
       })
       .then(dat=>{
-          this.goods_list = dat.data;        
-      }).catch(err=>{      
+          this.goods_list = dat.data;
+      }).catch(err=>{
          console.log(err.response);
       });
     },

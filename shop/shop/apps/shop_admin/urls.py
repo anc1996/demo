@@ -1,8 +1,7 @@
 from django.urls import re_path
+from rest_framework.routers import DefaultRouter
 from rest_framework_jwt.views import obtain_jwt_token
-from shop_admin.views import statistical,UsersView
-
-
+from shop_admin.views import statistical,UsersView,SpecsViewSet,imageViewSet
 
 urlpatterns = [
     # 用户注册，反向解析写法：users.register
@@ -21,4 +20,18 @@ urlpatterns = [
     re_path(r'^statistical/goods_day_views/$', statistical.GoodsDayView.as_view()),
     # 用户管理
     re_path(r'^users/$', UsersView.UserView.as_view()),
+    # 商品管理-新增商品规格
+    re_path(r'^goods/simple/$', SpecsViewSet.SpecsView.as_view({'get':'simple'})),
+    #商品管理-新增SKU图片
+    re_path(r'^skus/simple/$', imageViewSet.ImagesView.as_view({'get': 'simple'})),
 ]
+
+
+# --规格表路由---
+router=DefaultRouter()
+# 商品管理-规格管理
+router.register('goods/specs',SpecsViewSet.SpecsView,basename='specs')
+# 商品管理-SKU图片管理
+router.register('skus/images',imageViewSet.ImagesView,basename='images')
+print(router.urls)
+urlpatterns+=router.urls

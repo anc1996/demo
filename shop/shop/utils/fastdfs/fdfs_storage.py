@@ -1,5 +1,5 @@
 from django.core.files.storage import Storage
-from django.conf import  settings
+from django.conf import settings
 
 
 class FastDFSStorage(Storage):
