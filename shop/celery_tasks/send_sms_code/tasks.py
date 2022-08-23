@@ -8,7 +8,7 @@ from celery_tasks.main import celery_app
 # name：异步任务别名
 # retry_backoff：异常自动重试的时间间隔 第n次(retry_backoff×2^(n-1))s
 # max_retries：异常自动重试次数的上限
-@celery_app.task(bind=True,name='ccp_send_sms_code',retry_backoff=2)
+@celery_app.task(bind=True,name='ccp_send_sms_code',retry_backoff=2,max_retries=4)
 def ccp_send_sms_code(self,mobile, sms_code):
     """
     发送短信验证码的异步任务

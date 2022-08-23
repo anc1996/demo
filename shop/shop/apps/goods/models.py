@@ -167,7 +167,7 @@ class SPUSpecification(BaseModel):
 
 
 class SpecificationOption(BaseModel):
-    """规格选项"""
+    """SPU规格选项"""
     spec = models.ForeignKey(SPUSpecification, related_name='options', on_delete=models.CASCADE, verbose_name='规格')
     value = models.CharField(max_length=20, verbose_name='选项值')
 

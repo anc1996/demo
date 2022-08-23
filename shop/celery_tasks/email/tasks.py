@@ -13,7 +13,7 @@ from celery_tasks.main import celery_app
 logger=logging.getLogger('send_email')
 
 
-@celery_app.task(bind=True,name='send_verify_email',retry_backoff=3) # name给任务起别名
+@celery_app.task(bind=True,name='send_verify_email',retry_backoff=3,max_retries=4) # name给任务起别名
 def send_verify_email(self,to_email,verify_url):
     """
     定义发送验证邮件
