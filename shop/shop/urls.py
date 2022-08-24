@@ -50,7 +50,7 @@ urlpatterns = [
     # payment
     re_path(r'^',include(('payment.urls','payment'), namespace='payment')),
     # scheduler
-    # re_path(r'^',include('scheduler.urls')),
+    re_path(r'^',include('scheduler.urls')),
     # shop_admin
     re_path(r'^shop_admin/', include('shop_admin.urls')),
 
