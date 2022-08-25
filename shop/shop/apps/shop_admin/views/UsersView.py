@@ -21,7 +21,7 @@ class UserView(ListCreateAPIView):
         if keyword is None or keyword is '':
             return User.objects.all()
         else:
-            return User.objects.filter(username__contains=keyword)
+            return User.objects.filter(username__icontains=keyword)
 
     # 2、要指定当前视图使用的序列化器
     # serializer_class =User_serializer.UserSerializer

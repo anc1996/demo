@@ -37,5 +37,5 @@ router.register('goods/specs',SpecsViewSet.SpecsView,basename='specs')
 router.register('skus/images',imageViewSet.ImagesView,basename='images')
 # 商品管理-SKU表管理
 router.register('skus',skuViewSet.SKUView,basename='skus')
-print(router.urls)
+# print(router.urls)
 urlpatterns+=router.urls

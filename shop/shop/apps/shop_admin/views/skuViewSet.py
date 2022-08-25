@@ -17,15 +17,14 @@ class SKUView(ModelViewSet):
     # 权限指定
     permission_classes=[IsAdminUser]
 
-    # 重写get_queryset方法，判断是否传递keyword查询参数
+    # 重写get_queryset方法，判断是否传递keyword查询参数,为了搜索查询准备
     def get_queryset(self):
           # 提取keyword
         keyword=self.request.query_params.get('keyword')
-
         if keyword == '' or keyword is None:
             return SKU.objects.all()
         else:
-            return SKU.objects.filter(name=keyword)
+            return SKU.objects.filter(name__icontains=keyword)  # 包含,忽略大小写
 
     @action(methods=['get'], detail=False)
     def categories(self,request):
@@ -53,3 +52,4 @@ class SKUView(ModelViewSet):
         # 3、序列号返回规格信息
         serializer=SPUSpecSerialzier(data,many=True)
         return Response(serializer.data)
+

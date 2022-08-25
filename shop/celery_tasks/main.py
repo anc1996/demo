@@ -13,8 +13,8 @@ celery_app.config_from_object('celery_tasks.config')
 
 # 注册任务
 celery_app.autodiscover_tasks(['celery_tasks.send_sms_code',
-                               'celery_tasks.email',
-                               'celery_tasks.static_file'])
-
+                               'celery_tasks.email','celery_tasks.static_file'
+                               ])
+#
 ## 消费者为celery，启动进程
 

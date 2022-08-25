@@ -21,7 +21,7 @@ def send_verify_email(self,to_email,verify_url):
     :param verify_url: 激活链接
     :return:
     """
-    # send_mail
+
     """
     send_mail(subject, message, from_email, recipient_list,
               fail_silently=False, auth_user=None, auth_password=None,
@@ -40,6 +40,7 @@ def send_verify_email(self,to_email,verify_url):
         html_message:富文本（html）。 若提供了 html_message，会使邮件成为 multipart/alternative 的实例， message 的内容类型则是 text/plain ，并且 html_message 的内容类型是 text/html 。
         返回值会是成功发送的信息的数量（只能是 0 或 1 ，因为同时只能发送一条消息）。
     """
+
     subject = "shop邮箱验证"
     html_message = '<p>尊敬的用户您好！</p>' \
                    '<p>感谢您使用shop。</p>' \

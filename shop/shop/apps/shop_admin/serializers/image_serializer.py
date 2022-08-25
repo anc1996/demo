@@ -4,7 +4,6 @@ from django.conf import settings
 from celery_tasks.static_file.tasks import get_detail_html
 from goods.models import SKUImage,SKU
 
-
 class ImagesSerializer(serializers.ModelSerializer):
     """
         SKU图片的序列化器
@@ -28,6 +27,7 @@ class ImagesSerializer(serializers.ModelSerializer):
         image_url=group_url.replace('\\','//')
         # 8、保存图片
         img = SKUImage.objects.create(sku=validated_data['sku'], image=image_url)
+
         # 异步生成详情页静态页面
         get_detail_html.delay(img.sku.id)
         return img
