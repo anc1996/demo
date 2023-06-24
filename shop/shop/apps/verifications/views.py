@@ -28,6 +28,8 @@ class ImageCodeView(View):
         """保存图形验证"""
         redis_conn=get_redis_connection('VerifyCode')
         # setnx(self, name: KeyT, value: EncodableT) -> ResponseT:
+        # SETEX key seconds value
+        # SETEX 命令将键 key 的值设置为 value,并将键 key 的生存时间设置为 seconds 秒钟。
         redis_conn.setex('img_%s'%uuid,constants.IMAGE_CODE_REDIS_EXPIRES,text)
         # 响应图形验证码
         return HttpResponse(image,content_type='image/jpg')
@@ -51,7 +53,7 @@ class SMSCodeView(View):
         redis_conn=get_redis_connection('VerifyCode')
 
         """判断发送短信验证码是否频繁"""
-        # 提取发送验证码的标记
+        # 提取发送验证码的标记，send_flag=1表示频繁发送短信验证码
         send_flag=redis_conn.get('send_flag_%s'% mobile)
         if send_flag:
             return JsonResponse({'code':RETCODE.THROTTLINGERR,'errmsg':'发送短信验证码频繁'})
@@ -60,8 +62,13 @@ class SMSCodeView(View):
         if image_code_server is None:
             return JsonResponse({'code':RETCODE.IMAGECODEERR,'errmsg':'图形验证码已失效'})
         print(type(image_code_server))
+
         # 删除图形验证码
-        redis_conn.delete('img_%s' % uuid)
+        try:
+            redis_conn.delete('img_%s' % uuid)
+        except Exception as e:
+            logger.error(e)
+
         # 对比图形验证码
         image_code_server=image_code_server.decode()# 将btyes转成字符串类型
         if image_code_client.lower()!=image_code_server.lower(): # 验证码转小写
@@ -73,10 +80,10 @@ class SMSCodeView(View):
         # 创建redis管道
         pl=redis_conn.pipeline()
         # 将命令添加到队列中
-        # 保存短信验证码
+        # 保存短信验证码，有效事件300秒
         pl.setex('sms_%s' % mobile,constants.SMS_CODE_REDIS_EXPIRES,sms_code)
         """避免频繁发送短信验证码"""
-        # 保存发送验证码的标记
+        # 保存发送验证码的标记，60s内是否重复发送的标记
         pl.setex('send_flag_%s'% mobile,constants.SEND_SMS_CODE_INTERVAL,1)
         # 执行
         pl.execute()

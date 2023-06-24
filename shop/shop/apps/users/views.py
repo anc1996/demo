@@ -88,6 +88,7 @@ class RegisterView(View):
 
         # 实现状态保持
         login(request,user)
+
         '''响应结果：重定向首页'''
         response=redirect(reverse('contents:index'))
         # 为了实现在首页的右上角展示用户名信息，我们需要将用户名缓存到cookie中,有效期15天

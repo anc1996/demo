@@ -21,7 +21,7 @@ let vm=new Vue({
         error_mobile:false,
         error_allow:false,
         error_image_code:false,
-        send_flag:false,// 控制短信发送验证的频率。false表示可以点击
+        send_flag:false, // 控制短信发送验证的频率。false表示可以点击
         error_sms_code:false,
 
         //error_message
@@ -104,7 +104,7 @@ let vm=new Vue({
             this.image_code_url='/image_codes/'+this.uuid+'/';
         },
         // 校验用户名
-        check_username(){
+        check_username(){  
             //用户名是5-20个字符，[a-zA-Z0-9_-]
             //定义正则
             let re=/^[a-zA-Z0-9_-]{5,20}$/;
@@ -224,6 +224,7 @@ let vm=new Vue({
             this.check_mobile();
             this.check_allow();
             this.check_sms_code();
+
 
             // 在校验之后，注册数据中，只要有错误，就禁用掉表单的提交事件
              if(this.error_name==true||this.error_password==true||this.error_password2==true||

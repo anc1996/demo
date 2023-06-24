@@ -37,7 +37,7 @@ _softVersion = '2013-12-26'
 #     result = rest.sendTemplateSMS(to, datas, tempId)
 #     print(result)
 
-# 单例设计模式，单例模式确保某个类有且仅有一个实例，而且自行实例化并向整个系统提供这个实例
+# 单例设计模式，单例模式确保一个类有且仅有一个实例，而且自行实例化并向整个系统提供这个实例
 class CCP(object):
     """发送短信验证码的单例类"""
     # 定义单例的初始化方法
@@ -48,7 +48,7 @@ class CCP(object):
         :param kwargs:
         :return: 单例对象
         """
-        # 判断单例是否存在:_instatance属性中存储的就是单例
+        # 判断单例是否存在:_instance 属性中存储的就是单例
         if not hasattr(cls,'_instatance'):   #hasattr: This is done by calling getattr(obj, name) and catching AttributeError.
             # 如果单例不存在，初始化单例
             cls._instance=super(CCP,cls).__new__(cls,*args,**kwargs)
@@ -71,8 +71,10 @@ class CCP(object):
          # 短信验证码发送有延迟
         print(result)
         if(result.get('statusCode')=='000000'):
+            # 返回0，表示发送短信成功
             return 0
         else:
+            # 返回-1，表示发送失败
             return -1
 
 
